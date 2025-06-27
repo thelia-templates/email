@@ -1,0 +1,10 @@
+{
+    "name": "thelia/email-default-template",
+    "type": "thelia-email-template",
+    "require": {
+        "thelia/smarty-module": "dev-twig"
+    },
+    "extra": {
+        "installer-name": "default"
+    }
+}
