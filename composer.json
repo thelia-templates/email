@@ -4,7 +4,7 @@
     "description": "Default email template for Thelia",
     "license": "GPL-3.0-or-later",
     "require": {
-        "thelia/smarty-module": "dev-twig"
+        "thelia/twig-engine-module": "dev-twig"
     },
     "extra": {
         "installer-name": "default"

@@ -1,0 +1,4 @@
+{# Default TEXT mail layout. message_body is the text message defined in the back office,
+   or the content of the selected template.
+   DO NOT DELETE THIS FILE, some plugins may use it. #}
+{% block message_body %}{{ message_body|default('') }}{% endblock %}

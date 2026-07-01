@@ -1,0 +1,4 @@
+{# Default HTML mail layout. message_body is the HTML message defined in the back office,
+   or the content of the selected template. Rendered raw to keep its HTML.
+   DO NOT DELETE THIS FILE, some plugins may use it. #}
+{% block message_body %}{{ message_body|default('')|raw }}{% endblock %}
