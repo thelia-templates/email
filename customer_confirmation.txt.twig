@@ -1,0 +1,10 @@
+{%- for customer in loop('confirmation', 'customer', {current: false, id: customer_id}) -%}
+{{ 'Welcome to %store%,'|trans({'%store%': config('store_name')}, 'email', locale) }}
+
+{{ 'To complete your customer account creation, please confirm your email address by clicking the link below, or copying it in your browser address bar.'|trans({}, 'email', locale) }}
+
+{{ thelia_url('/customer/confirm/%token', {token: customer.CONFIRMATION_TOKEN}) }}
+
+{{ 'Kind regards'|trans({}, 'email', locale) }},
+{{ 'The %store% team.'|trans({'%store%': config('store_name')}, 'email', locale) }}
+{%- endfor -%}

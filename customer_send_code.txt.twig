@@ -1,0 +1,10 @@
+{%- for customer in loop('confirmation', 'customer', {current: false, id: customer_id}) -%}
+{{ 'Welcome to %store%,'|trans({'%store%': config('store_name')}, 'email', locale) }}
+
+{{ 'To complete your customer account creation, please confirm your account by copy/paste the code below..'|trans({}, 'email', locale) }}
+
+{{ code|default('') }}
+
+{{ 'Kind regards'|trans({}, 'email', locale) }},
+{{ 'The %store% team.'|trans({'%store%': config('store_name')}, 'email', locale) }}
+{%- endfor -%}

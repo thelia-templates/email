@@ -1,0 +1,121 @@
+{% extends "email-layout.html.twig" %}
+
+{# Do not provide a "Open in browser" link #}
+{% block browser %}{% endblock %}
+{# No big image header #}
+{% block image_header %}{% endblock %}
+{# No logo header #}
+{% block logo_header %}{% endblock %}
+{# No pre-header #}
+{% block pre_header %}{% endblock %}
+
+{# Subject #}
+{% block email_subject %}{{ 'New order placed on %store_name% Nº %ref%'|trans({'%ref%': order_ref, '%store_name%': config('store_name')}, 'email', locale) }}{% endblock %}
+
+{# Title #}
+{% block email_title %}{{ 'Hello, a new order has been placed.'|trans({}, 'email', locale) }}{% endblock %}
+
+{# Content #}
+{% block email_content %}
+    {% for order in loop('order.invoice', 'order', {id: order_id, customer: '*'}) %}
+        {% set orderCurrencyIsoCode = '' %}
+        {% for cur in loop('currency.order', 'currency', {id: order.CURRENCY}) %}{% set orderCurrencyIsoCode = cur.ISOCODE %}{% endfor %}
+        {% for cust in loop('customer.invoice', 'customer', {id: order.CUSTOMER, current: 0}) %}{% set customerRef = cust.REF %}{% endfor %}
+
+        <p><a href="{{ thelia_url('/admin/order/update/%id', {id: order.ID}) }}">{{ 'View this order in your shop back-office.'|trans({}, 'email', locale) }}</a></p>
+
+        {{ hook('email-html.order-notification.before-address', {order: order_id}) }}
+
+        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <td valign="top" width="55%">
+                    <strong>{{ 'Customer delivery address:'|trans({}, 'email', locale) }}</strong><br>
+                    {% set deliveryAddressHook = hook('email-html.order-notification.delivery-address', {module: order.DELIVERY_MODULE, order: order_id}) %}
+                    {% if deliveryAddressHook is not empty %}
+                        {{ deliveryAddressHook }}
+                    {% else %}
+                        {{ format_address(order.DELIVERY_ADDRESS, locale)|raw }}
+                    {% endif %}
+                </td>
+                <td valign="top">
+                    <strong>{{ 'Customer billing address:'|trans({}, 'email', locale) }}</strong><br />
+                    {{ format_address(order.INVOICE_ADDRESS, locale)|raw }}
+                </td>
+            </tr>
+        </table>
+
+        {{ hook('email-html.order-notification.after-address', {order: order_id}) }}
+
+        <p>
+            {{ 'Order Total:'|trans({}, 'email', locale) }} {{ format_money(order.TOTAL_TAXED_AMOUNT, order.CURRENCY) }}<br />
+            {{ 'Order Number:'|trans({}, 'email', locale) }} {{ order.REF }}<br />
+            {{ 'Paid With:'|trans({}, 'email', locale) }} {% for m in loop('payment-module', 'module', {id: order.PAYMENT_MODULE}) %}{{ m.TITLE }}{% endfor %}<br />
+            {{ 'Purchase Date:'|trans({}, 'email', locale) }} {{ format_date(order.CREATE_DATE, 'datetime') }}<br />
+            {{ 'Delivery method:'|trans({}, 'email', locale) }} {% for m in loop('delivery-module', 'module', {id: order.DELIVERY_MODULE}) %}{{ m.TITLE }}{% endfor %}<br />
+        </p>
+
+        {{ hook('email-html.order-notification.before-products', {order: order_id}) }}
+
+        <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;line-height:2em">
+            <tr style="color:#999;font-size:11px">
+                <td style="color:#999;border-bottom:1px solid #000">{{ 'What You Purchased'|trans({}, 'email', locale) }}</td>
+                <td align="right" style="color:#999;border-bottom:1px solid #000">{{ 'Price in'|trans({}, 'email', locale) }} {{ orderCurrencyIsoCode }}</td>
+            </tr>
+            {% set subtotal = 0 %}
+            {% for product in loop('order-products', 'order_product', {order: order.ID}) %}
+            {% if product.WAS_IN_PROMO == 1 %}
+                {% set realTaxedPrice = product.TAXED_PROMO_PRICE %}
+            {% else %}
+                {% set realTaxedPrice = product.TAXED_PRICE %}
+            {% endif %}
+                <tr>
+                    <td style="border-bottom:1px solid #000">
+                        <b>{{ product.TITLE }}</b> <i>({{ product.REF }}{% if product.REF != product.PRODUCT_SALE_ELEMENTS_REF %}, {{ product.PRODUCT_SALE_ELEMENTS_REF }}{% endif %})</i>
+                        {% set combinations = loop('combinations', 'order_product_attribute_combination', {order_product: product.ID}) %}
+                        {% if combinations %}<br />
+                        {% for combination in combinations %}
+                            <span style="color:#999;display:block;font-size:11px;line-height:1.2">* {{ combination.ATTRIBUTE_TITLE }}: {{ combination.ATTRIBUTE_AVAILABILITY_TITLE }}</span>
+                        {% endfor %}
+                        {% endif %}
+                    </td>
+                    <td align="right" style="border-bottom:1px solid #000; white-space:nowrap">
+                        {{ product.QUANTITY }} x {{ format_money(realTaxedPrice, order.CURRENCY) }}
+                        {% set subtotal = subtotal + realTaxedPrice * product.QUANTITY %}
+                    </td>
+                </tr>
+
+                {{ hook('email-html.order-notification.order-product', {order: order_id, order_product: product.ID}) }}
+
+            {% endfor %}
+            <tr>
+                <td align="right" style="text-align:right">{{ 'Subtotal'|trans({}, 'email', locale) }}</td>
+                <td align="right" style="text-align:right">{{ format_money(subtotal, order.CURRENCY) }} </td>
+            </tr>
+            {% if order.DISCOUNT > 0 %}
+                <tr>
+                    <td align="right" style="text-align:right">{{ 'Discount'|trans({}, 'email', locale) }}</td>
+                    <td align="right" style="text-align:right">{{ format_money(order.DISCOUNT, order.CURRENCY) }} </td>
+                </tr>
+                <tr>
+                    <td align="right" style="text-align:right">{{ 'Total'|trans({}, 'email', locale) }}</td>
+                    <td align="right" style="text-align:right">{{ format_money(order.TOTAL_TAXED_AMOUNT - order.POSTAGE, order.CURRENCY) }} </td>
+                </tr>
+            {% endif %}
+            <tr>
+            <tr>
+                <td align="right" style="text-align:right">{{ 'Shipping:'|trans({}, 'email', locale) }}</td>
+                <td align="right" style="text-align:right">{{ format_money(order.POSTAGE, order.CURRENCY) }}</td>
+            </tr>
+            <tr>
+                <td align="right" style="text-align:right"><strong>{{ 'Order Total'|trans({}, 'email', locale) }}</strong></td>
+                <td align="right" style="text-align:right"><strong>{{ format_money(order.TOTAL_TAXED_AMOUNT, order.CURRENCY) }}</strong></td>
+            </tr>
+        </table>
+    {% endfor %}
+
+    {{ hook('email-html.order-notification.after-products', {order: order_id}) }}
+
+    <br />
+
+    {{ 'Have a nice day.'|trans({}, 'email', locale) }}<br />
+{% endblock %}

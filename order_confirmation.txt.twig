@@ -1,0 +1,34 @@
+{% for order in loop('order.invoice', 'order', {id: order_id, customer: '*'}) %}
+{{- 'Hello,'|trans({}, 'email', locale) }}
+
+{{ 'Here is the details of your order %ref% placed on %date%'|trans({'%ref%': order.REF, '%date%': format_date(order.INVOICE_DATE)}, 'email', locale) }}
+{{ hook('email-txt.order-confirmation.before-address', {order: order_id}) }}
+{{ 'Your delivery address'|trans({}, 'email', locale) }}
+{%- set deliveryAddressHook = hook('email-txt.order-confirmation.delivery-address', {module: order.DELIVERY_MODULE, order: order_id}) %}
+{% if deliveryAddressHook is not empty %}{{ deliveryAddressHook }}{% else %}{{ format_address(order.DELIVERY_ADDRESS, locale, false) }}{% endif %}
+
+{{ 'Your billing address'|trans({}, 'email', locale) }}
+{{ format_address(order.INVOICE_ADDRESS, locale, false) }}
+
+{{ hook('email-txt.order-confirmation.after-address', {order: order_id}) }}
+{{ 'Items ordered:'|trans({}, 'email', locale) }}
+{{ hook('email-txt.order-confirmation.before-products', {order: order_id}) }}
+{% for product in loop('order-products', 'order_product', {order: order.ID}) %}
+{%- if product.WAS_IN_PROMO == 1 %}{% set realTaxedPrice = product.TAXED_PROMO_PRICE %}{% else %}{% set realTaxedPrice = product.TAXED_PRICE %}{% endif %}
+    {{ 'Item : %item%'|trans({'%item%': product.TITLE}, 'email', locale) }}
+{%- set combinations = loop('combinations', 'order_product_attribute_combination', {order_product: product.ID}) %}
+{% for combination in combinations %}    - {{ combination.ATTRIBUTE_TITLE }} - {{ combination.ATTRIBUTE_AVAILABILITY_TITLE }}
+{% endfor -%}
+{{ hook('email-txt.order-confirmation.product-list', {order: order_id, order_product: product.ID}) }}
+    {{ 'Quantity : %qty%'|trans({'%qty%': product.QUANTITY}, 'email', locale) }}
+    {{ 'Unit price : %amount%'|trans({'%amount%': format_money(realTaxedPrice, order.CURRENCY)}, 'email', locale) }}
+    {{ hook('email-txt.order-confirmation.order-product', {order: order_id, order_product: product.ID}) }}
+{% endfor -%}
+-----------------------------------------
+{{ 'Items total : %amount%'|trans({'%amount%': format_money(order.TOTAL_TAXED_AMOUNT - order.POSTAGE, order.CURRENCY)}, 'email', locale) }}
+{{ 'Shipping    : %amount%'|trans({'%amount%': format_money(order.POSTAGE, order.CURRENCY)}, 'email', locale) }}
+{{ 'Total due   : %amount%'|trans({'%amount%': format_money(order.TOTAL_TAXED_AMOUNT, order.CURRENCY)}, 'email', locale) }}
+==================================
+{{ hook('email-txt.order-confirmation.after-products', {order: order_id}) }}
+{{ 'Your invoice is available in your customer account at %url%'|trans({'%url%': config('url_site')}, 'email', locale) }}
+{% endfor -%}

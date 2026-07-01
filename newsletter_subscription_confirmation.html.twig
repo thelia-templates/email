@@ -1,0 +1,24 @@
+{% extends "email-layout.html.twig" %}
+
+{# Do not provide a "Open in browser" link #}
+{% block browser %}{% endblock %}
+{# No pre-header #}
+{% block pre_header %}{% endblock %}
+
+{# Subject #}
+{% block email_subject %}{{ 'Your subscription to %store% newsletter'|trans({'%store%': config('store_name')}, 'email', locale) }}{% endblock %}
+
+{# Title #}
+{% block email_title %}{% endblock %}
+
+{# Content #}
+{% block email_content %}
+    {% if (firstname is defined and firstname) or (lastname is defined and lastname) %}
+        <p>{{ 'Dear %firstname% %lastname%,'|trans({'%firstname%': firstname|default(''), '%lastname%': lastname|default('')}, 'email', locale) }}</p>
+    {% else %}
+        <p>{{ 'Hello,'|trans({}, 'email', locale) }}</p>
+    {% endif %}
+    <p>{{ 'Thank you for your registration. You\'ll now receive the %store% newsletter on your email address %email%.'|trans({'%store%': config('store_name'), '%email%': email|default('')}, 'email', locale) }}</p>
+    <p>{{ 'To unsubscribe from our newsletter, please <a href="%unsublink%">click here</a>.'|trans({'%unsublink%': thelia_url('/newsletter-unsubscribe', {email: email|default('')})}, 'email', locale)|raw }}</p>
+    <p>{{ 'The %store% team.'|trans({'%store%': config('store_name')}, 'email', locale) }}</p>
+{% endblock %}

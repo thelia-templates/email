@@ -1,0 +1,30 @@
+{% extends "email-layout.html.twig" %}
+
+{# Open in browser #}
+{% block browser %}{% endblock %}
+
+{# No big image header #}
+{% block image_header %}{% endblock %}
+
+{# No pre-header #}
+{% block pre_header %}{% endblock %}
+
+{# Subject #}
+{% block email_subject %}{{ 'Confirm your %store% account'|trans({'%store%': config('store_name')}, 'email', locale) }}{% endblock %}
+
+{# Title #}
+{% block email_title %}{% endblock %}
+
+{# Content #}
+{% block email_content %}
+    {% for customer in loop('confirmation', 'customer', {current: false, id: customer_id}) %}
+        <p>{{ 'Welcome to %store%,'|trans({'%store%': config('store_name')}, 'email', locale) }}</p>
+        <p>{{ 'To complete your customer account creation, please confirm your email address by clicking the link below, or copying it in your browser address bar.'|trans({}, 'email', locale) }}</p>
+        {% set confirm_url = thelia_url('/customer/confirm/%token', {token: customer.CONFIRMATION_TOKEN}) %}
+        <p><a href="{{ confirm_url }}">{{ confirm_url }}</a></p>
+        <p>
+            {{ 'Kind regards'|trans({}, 'email', locale) }},<br>
+            {{ 'The %store% team.'|trans({'%store%': config('store_name')}, 'email', locale) }}
+        </p>
+    {% endfor %}
+{% endblock %}

@@ -1,0 +1,9 @@
+{% if (firstname is defined and firstname) or (lastname is defined and lastname) %}
+{{- 'Dear %firstname% %lastname%,'|trans({'%firstname%': firstname|default(''), '%lastname%': lastname|default('')}, 'email', locale) }}
+{%- else %}
+{{- 'Hello,'|trans({}, 'email', locale) }}
+{%- endif %}
+{{ 'Thank you for your registration. You\'ll now receive the %store% newsletter on your email address %email%.'|trans({'%store%': config('store_name'), '%email%': email|default('')}, 'email', locale) }}
+{{ 'To unsubscribe from our newsletter, please go to the following web address:'|trans({}, 'email', locale) }}
+    {{ thelia_url('/newsletter-unsubscribe', {email: email|default('')}) }}
+{{ 'The %store% team.'|trans({'%store%': config('store_name')}, 'email', locale) }}
