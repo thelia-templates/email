@@ -63,11 +63,6 @@
             </tr>
             {% set subtotal = 0 %}
             {% for product in loop('order-products', 'order_product', {order: order.ID}) %}
-            {% if product.WAS_IN_PROMO == 1 %}
-                {% set realTaxedPrice = product.TAXED_PROMO_PRICE %}
-            {% else %}
-                {% set realTaxedPrice = product.TAXED_PRICE %}
-            {% endif %}
                 <tr>
                     <td style="border-bottom:1px solid #000">
                         <b>{{ product.TITLE }}</b> <i>({{ product.REF }}{% if product.REF != product.PRODUCT_SALE_ELEMENTS_REF %}, {{ product.PRODUCT_SALE_ELEMENTS_REF }}{% endif %})</i>
@@ -79,8 +74,13 @@
                         {% endif %}
                     </td>
                     <td align="right" style="border-bottom:1px solid #000; white-space:nowrap">
-                        {{ product.QUANTITY }} x {{ format_money(realTaxedPrice, order.CURRENCY) }}
-                        {% set subtotal = subtotal + realTaxedPrice * product.QUANTITY %}
+                        {{ product.QUANTITY }} x {{ format_money(product.REAL_TAXED_PRICE, order.CURRENCY) }}
+                        {# The loop already rounds the line the way the order was
+                           totalled, and it picks the promotional amounts on its own.
+                           Multiplying the unit price here instead reintroduced the
+                           rounding the order does not use, and left the subtotal
+                           and the total of the same email disagreeing. #}
+                        {% set subtotal = subtotal + product.REAL_TOTAL_TAXED_PRICE %}
                     </td>
                 </tr>
 
