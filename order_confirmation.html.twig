@@ -119,7 +119,14 @@
     {% if footerHook is not empty %}
         {{ footerHook }}
     {% else %}
-        <p><a href="{{ thelia_url('/account') }}">{{ 'View this order in your account at %shop_name%'|trans({'%shop_name%': config('store_name')}, 'email', locale) }}</a></p>
+        {# A buyer who ordered without an account has no account page to look the order up
+           on: this link, signed for this order alone, is their only way back to it. The
+           core passes it for guest orders only, so every other buyer keeps the account link. #}
+        {% if guest_order_tracking_url is defined %}
+            <p><a href="{{ guest_order_tracking_url }}">{{ 'Follow your order at %shop_name%'|trans({'%shop_name%': config('store_name')}, 'email', locale) }}</a></p>
+        {% else %}
+            <p><a href="{{ thelia_url('/account') }}">{{ 'View this order in your account at %shop_name%'|trans({'%shop_name%': config('store_name')}, 'email', locale) }}</a></p>
+        {% endif %}
 
         <br />
 

@@ -30,5 +30,5 @@
 {{ 'Total due   : %amount%'|trans({'%amount%': format_money(order.TOTAL_TAXED_AMOUNT, order.CURRENCY)}, 'email', locale) }}
 ==================================
 {{ hook('email-txt.order-confirmation.after-products', {order: order_id}) }}
-{{ 'Your invoice is available in your customer account at %url%'|trans({'%url%': config('url_site')}, 'email', locale) }}
+{% if guest_order_tracking_url is defined %}{{ 'Follow your order at %url%'|trans({'%url%': guest_order_tracking_url}, 'email', locale) }}{% else %}{{ 'Your invoice is available in your customer account at %url%'|trans({'%url%': config('url_site')}, 'email', locale) }}{% endif %}
 {% endfor -%}
