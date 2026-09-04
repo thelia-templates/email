@@ -27,6 +27,8 @@ return [
     'Delivery method:' => 'Livré par : ',
     'Discount' => 'Remise',
     'Email not displaying correctly?' => 'Le mail ne s\'affiche pas correctement ?',
+    'Follow your order at %shop_name%' => 'Suivez votre commande sur %shop_name%',
+    'Follow your order at %url%' => 'Suivez votre commande : %url%',
     'For any questions, or concerns, feel free to contact <a href="mailto:%mail%" style="color:#3c69c1;text-decoration:none" target="_blank">%mail%</a>.' => 'Pour toutes questions contactez nous par mail : <a href="mailto:%mail%" style="color:#3c69c1;text-decoration:none" target="_blank">%mail%</a>.',
     'Have a nice day' => 'Bonne journée.',
     'Have a nice day.' => 'Bonne journée.',
