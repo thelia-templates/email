@@ -1,0 +1,60 @@
+{% extends "email-layout.html.twig" %}
+
+{# Open in browser #}
+{% block browser %}{% endblock %}
+
+{# No big image header #}
+{% block image_header %}{% endblock %}
+
+{# No pre-header #}
+{% block pre_header %}{% endblock %}
+
+{# Subject #}
+{% block email_subject %}{{ 'Update on your return %ref%'|trans({'%ref%': return_ref}, 'email', locale) }}{% endblock %}
+
+{# Title #}
+{% block email_title %}{% endblock %}
+
+{# Content #}
+{% block email_content %}
+    {{ 'Hello,'|trans({}, 'email', locale) }}<br /><br />
+
+    {# One sentence per state of the return. The last branch is a fallback and not a
+       state of its own: a state added to the return workflow later still produces a
+       mail that says something, instead of an empty one. #}
+    {% if status_code == 'requested' %}
+        {{ 'We have received your return request %ref%. It is being reviewed.'|trans({'%ref%': return_ref}, 'email', locale) }}
+    {% elseif status_code == 'info_awaited' %}
+        {{ 'We need more information before we can process your return %ref%. Please get in touch with us so that we can move it forward.'|trans({'%ref%': return_ref}, 'email', locale) }}
+    {% elseif status_code == 'accepted' %}
+        {{ 'Your return request %ref% has been accepted. The items can now be sent back to us, and we will let you know as soon as we receive them.'|trans({'%ref%': return_ref}, 'email', locale) }}
+    {% elseif status_code == 'refused' %}
+        {{ 'Your return request %ref% has been refused.'|trans({'%ref%': return_ref}, 'email', locale) }}
+        {% if refusal_reason is defined and refusal_reason is not empty %}
+            <br /><br />{{ 'Reason given: %reason%'|trans({'%reason%': refusal_reason}, 'email', locale) }}
+        {% endif %}
+    {% elseif status_code == 'received' %}
+        {{ 'We have received the items of your return %ref%. It is being processed.'|trans({'%ref%': return_ref}, 'email', locale) }}
+    {% elseif status_code == 'settled' %}
+        {{ 'Your return %ref% has been settled and is now closed.'|trans({'%ref%': return_ref}, 'email', locale) }}
+    {% elseif status_code == 'expired' %}
+        {{ 'Your return %ref% has expired and has been closed, as the items were not received. Please get in touch with us if you still wish to return them.'|trans({'%ref%': return_ref}, 'email', locale) }}
+    {% else %}
+        {{ 'The status of your return %ref% has changed.'|trans({'%ref%': return_ref}, 'email', locale) }}
+    {% endif %}
+
+    <br /><br />
+
+    <p>
+        {{ 'Return Number:'|trans({}, 'email', locale) }} {{ return_ref }}<br />
+        {% if order_ref is defined and order_ref is not empty %}
+            {{ 'Order Number:'|trans({}, 'email', locale) }} {{ order_ref }}<br />
+        {% endif %}
+    </p>
+
+    <h2>{{ 'Support'|trans({}, 'email', locale) }}</h2>
+    {{ 'For any questions, or concerns, feel free to contact <a href="mailto:%mail%" style="color:#3c69c1;text-decoration:none" target="_blank">%mail%</a>.'|trans({'%mail%': config('store_email')}, 'email', locale)|raw }}<br /><br />
+
+    {{ 'Kind regards'|trans({}, 'email', locale) }},<br />
+    {{ 'The %store% team.'|trans({'%store%': config('store_name')}, 'email', locale) }}
+{% endblock %}

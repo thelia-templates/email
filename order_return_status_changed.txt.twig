@@ -1,0 +1,34 @@
+{{ 'Hello,'|trans({}, 'email', locale) }}
+
+{# Same branches as the HTML template, last one being the fallback for a state
+   added to the return workflow later. #}
+{%- if status_code == 'requested' %}
+{{ 'We have received your return request %ref%. It is being reviewed.'|trans({'%ref%': return_ref}, 'email', locale) }}
+{%- elseif status_code == 'info_awaited' %}
+{{ 'We need more information before we can process your return %ref%. Please get in touch with us so that we can move it forward.'|trans({'%ref%': return_ref}, 'email', locale) }}
+{%- elseif status_code == 'accepted' %}
+{{ 'Your return request %ref% has been accepted. The items can now be sent back to us, and we will let you know as soon as we receive them.'|trans({'%ref%': return_ref}, 'email', locale) }}
+{%- elseif status_code == 'refused' %}
+{{ 'Your return request %ref% has been refused.'|trans({'%ref%': return_ref}, 'email', locale) }}
+{% if refusal_reason is defined and refusal_reason is not empty -%}
+{{ 'Reason given: %reason%'|trans({'%reason%': refusal_reason}, 'email', locale) }}
+{%- endif %}
+{%- elseif status_code == 'received' %}
+{{ 'We have received the items of your return %ref%. It is being processed.'|trans({'%ref%': return_ref}, 'email', locale) }}
+{%- elseif status_code == 'settled' %}
+{{ 'Your return %ref% has been settled and is now closed.'|trans({'%ref%': return_ref}, 'email', locale) }}
+{%- elseif status_code == 'expired' %}
+{{ 'Your return %ref% has expired and has been closed, as the items were not received. Please get in touch with us if you still wish to return them.'|trans({'%ref%': return_ref}, 'email', locale) }}
+{%- else %}
+{{ 'The status of your return %ref% has changed.'|trans({'%ref%': return_ref}, 'email', locale) }}
+{%- endif %}
+
+{{ 'Return Number:'|trans({}, 'email', locale) }} {{ return_ref }}
+{% if order_ref is defined and order_ref is not empty -%}
+{{ 'Order Number:'|trans({}, 'email', locale) }} {{ order_ref }}
+{%- endif %}
+
+{{ 'For any questions, feel free to contact us at %mail%.'|trans({'%mail%': config('store_email')}, 'email', locale) }}
+
+{{ 'Kind regards'|trans({}, 'email', locale) }},
+{{ 'The %store% team.'|trans({'%store%': config('store_name')}, 'email', locale) }}
