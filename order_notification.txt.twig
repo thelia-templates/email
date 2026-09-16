@@ -1,7 +1,7 @@
 {% for order in loop('order.invoice', 'order', {id: order_id, customer: '*'}) %}
 {{- 'Hello'|trans({}, 'email', locale) }}
 
-{{ 'A new order ref. %ref% has been placed on %date%. Here are the details :'|trans({'%ref%': order.REF, '%date%': format_date(order.INVOICE_DATE)}, 'email', locale) }}
+{{ 'A new order ref. %ref% has been placed on %date%. Here are the details :'|trans({'%ref%': order.REF, '%date%': format_date(order.CREATE_DATE, 'datetime')}, 'email', locale) }}
 {{ hook('email-txt.order-notification.before-address', {order: order_id}) }}
 {{ '* Delivery address'|trans({}, 'email', locale) }}
 {%- set deliveryAddressHook = hook('email-txt.order-notification.delivery-address', {module: order.DELIVERY_MODULE, order: order_id}) %}
