@@ -4,7 +4,9 @@
     "description": "Default email template for Thelia",
     "license": "GPL-3.0-or-later",
     "require": {
-        "thelia/twig-engine-module": "^1.0"
+        "php": ">=8.3 <9.0",
+        "thelia/core": "^3.1",
+        "thelia/twig-engine-module": "^1.0.9"
     },
     "extra": {
         "installer-name": "default"
