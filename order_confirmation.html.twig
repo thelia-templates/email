@@ -109,6 +109,15 @@
                 <td align="right" style="text-align:right"><strong>{{ format_money(order.TOTAL_TAXED_AMOUNT, order.CURRENCY) }}</strong></td>
             </tr>
         </table>
+
+        {# Read back to the buyer so they can check what they wrote before the parcel goes
+           out. `default('')` keeps an older core, whose order loop does not publish it,
+           from breaking the mail. #}
+        {% if order.GIFT_MESSAGE|default('') %}
+            <br />
+            <p><strong>{{ 'Message for the recipient'|trans({}, 'email', locale) }}</strong></p>
+            <p>{{ order.GIFT_MESSAGE|nl2br }}</p>
+        {% endif %}
     {% endfor %}
 
     {{ hook('email-html.order-confirmation.after-products', {order: order_id}) }}

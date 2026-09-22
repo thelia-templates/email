@@ -43,6 +43,7 @@ return [
     'Items ordered:' => 'Items ordered:',
     'Items total : %amount%' => 'Items total : %amount%',
     'Kind regards' => 'Kind regards',
+    'Message for the recipient' => 'Message for the recipient',
     'New order placed on %store_name% Nº %ref%' => 'New order placed on %store_name% Nº %ref%',
     'Order Number:' => 'Order Number:',
     'Order Total' => 'Order Total',

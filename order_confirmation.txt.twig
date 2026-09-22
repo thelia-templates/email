@@ -29,6 +29,10 @@
 {{ 'Shipping    : %amount%'|trans({'%amount%': format_money(order.POSTAGE, order.CURRENCY)}, 'email', locale) }}
 {{ 'Total due   : %amount%'|trans({'%amount%': format_money(order.TOTAL_TAXED_AMOUNT, order.CURRENCY)}, 'email', locale) }}
 ==================================
+{% if order.GIFT_MESSAGE|default('') %}
+{{ 'Message for the recipient'|trans({}, 'email', locale) }}
+{{ order.GIFT_MESSAGE }}
+{% endif -%}
 {{ hook('email-txt.order-confirmation.after-products', {order: order_id}) }}
 {% if guest_order_tracking_url is defined %}{{ 'Follow your order at %url%'|trans({'%url%': guest_order_tracking_url}, 'email', locale) }}{% else %}{{ 'Your invoice is available in your customer account at %url%'|trans({'%url%': thelia_url('/account')}, 'email', locale) }}{% endif %}
 {% endfor -%}
