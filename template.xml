@@ -29,7 +29,7 @@
         <language>tr_TR</language>
         <language>uk_UA</language>
     </languages>
-    <version>1.0.0</version>
+    <version>1.2.0</version>
     <authors>
         <author>
             <name>Thelia team</name>
@@ -38,6 +38,6 @@
             <website>thelia.net</website>
         </author>
     </authors>
-    <thelia>3.0.0</thelia>
+    <thelia>3.2.0</thelia>
     <stability>prod</stability>
 </template>

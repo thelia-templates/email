@@ -5,7 +5,7 @@
     "license": "GPL-3.0-or-later",
     "require": {
         "php": ">=8.3 <9.0",
-        "thelia/core": "^3.1",
+        "thelia/core": "^3.2",
         "thelia/twig-engine-module": "^1.0.9"
     },
     "extra": {
