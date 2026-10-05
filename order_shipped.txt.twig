@@ -1,0 +1,19 @@
+{{ 'Hello,'|trans({}, 'email', locale) }}
+
+{{ 'Your order %ref% has been shipped and is on its way to you.'|trans({'%ref%': order_ref}, 'email', locale) }}
+
+{{ 'Order Number:'|trans({}, 'email', locale) }} {{ order_ref }}
+{% if carrier is defined and carrier is not empty -%}
+{{ 'Carrier:'|trans({}, 'email', locale) }} {{ carrier }}
+{% endif -%}
+{% if delivery_ref is defined and delivery_ref is not empty -%}
+{{ 'Tracking number:'|trans({}, 'email', locale) }} {{ delivery_ref }}
+{% endif -%}
+{% if tracking_url is defined and tracking_url is not empty %}
+{{ 'Track your parcel at %url%'|trans({'%url%': tracking_url}, 'email', locale) }}
+{% endif %}
+
+{{ 'For any questions, feel free to contact us at %mail%.'|trans({'%mail%': config('store_email')}, 'email', locale) }}
+
+{{ 'Kind regards'|trans({}, 'email', locale) }},
+{{ 'The %store% team.'|trans({'%store%': config('store_name')}, 'email', locale) }}
