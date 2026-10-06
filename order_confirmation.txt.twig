@@ -10,6 +10,10 @@
 {{ 'Your billing address'|trans({}, 'email', locale) }}
 {{ format_address(order.INVOICE_ADDRESS, locale, false) }}
 
+{% if order.DELIVERY_DATE is defined and order.DELIVERY_DATE %}
+{{ 'Requested delivery:'|trans({}, 'email', locale) }} {{ format_date(order.DELIVERY_DATE, 'date', null, locale) }}{% if order.DELIVERY_SLOT_START %} {{ 'from %start% to %end%'|trans({'%start%': order.DELIVERY_SLOT_START, '%end%': order.DELIVERY_SLOT_END}, 'email', locale) }}{% endif %}
+
+{% endif %}
 {{ hook('email-txt.order-confirmation.after-address', {order: order_id}) }}
 {{ 'Items ordered:'|trans({}, 'email', locale) }}
 {{ hook('email-txt.order-confirmation.before-products', {order: order_id}) }}

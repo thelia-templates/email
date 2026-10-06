@@ -112,4 +112,6 @@ return [
     'Your return request %ref% has been accepted. The items can now be sent back to us, and we will let you know as soon as we receive them.' => 'Your return request %ref% has been accepted. The items can now be sent back to us, and we will let you know as soon as we receive them.',
     'Your return request %ref% has been refused.' => 'Your return request %ref% has been refused.',
     'Your subscription to %store% newsletter' => 'Your subscription to %store% newsletter',
+    'Requested delivery:' => 'Requested delivery:',
+    'from %start% to %end%' => 'from %start% to %end%',
 ];

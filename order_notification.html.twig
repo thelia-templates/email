@@ -52,6 +52,9 @@
             {{ 'Paid With:'|trans({}, 'email', locale) }} {% for m in loop('payment-module', 'module', {id: order.PAYMENT_MODULE}) %}{{ m.TITLE }}{% endfor %}<br />
             {{ 'Purchase Date:'|trans({}, 'email', locale) }} {{ format_date(order.CREATE_DATE, 'datetime') }}<br />
             {{ 'Delivery method:'|trans({}, 'email', locale) }} {% for m in loop('delivery-module', 'module', {id: order.DELIVERY_MODULE}) %}{{ m.TITLE }}{% endfor %}<br />
+            {% if order.DELIVERY_DATE is defined and order.DELIVERY_DATE %}
+            {{ 'Requested delivery:'|trans({}, 'email', locale) }} {{ format_date(order.DELIVERY_DATE, 'date', null, locale) }}{% if order.DELIVERY_SLOT_START %} {{ 'from %start% to %end%'|trans({'%start%': order.DELIVERY_SLOT_START, '%end%': order.DELIVERY_SLOT_END}, 'email', locale) }}{% endif %}<br />
+            {% endif %}
         </p>
 
         {{ hook('email-html.order-notification.before-products', {order: order_id}) }}
