@@ -1,0 +1,13 @@
+{{ 'Hello,'|trans({}, 'email', locale) }}
+
+{{ 'Your order %ref% has been changed:'|trans({'%ref%': order_ref}, 'email', locale) }}
+{% for change in order_changes|default([]) %}
+- {% include 'order_edited_change.txt.twig' with { change: change, locale: locale } only %}
+{% endfor %}
+
+{{ 'Your account shows the order as it stands now.'|trans({}, 'email', locale) }}
+
+{{ 'For any questions, feel free to contact us at %mail%.'|trans({'%mail%': config('store_email')}, 'email', locale) }}
+
+{{ 'Kind regards'|trans({}, 'email', locale) }},
+{{ 'The %store% team.'|trans({'%store%': config('store_name')}, 'email', locale) }}
