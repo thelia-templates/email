@@ -33,7 +33,8 @@
 
     <ul>
         {% for change in order_changes|default([]) %}
-            <li>{% include 'order_edited_change.txt.twig' with { change: change, locale: locale } only %}</li>
+            {#- The sentence comes from a text template, never escaped: escape it for HTML here. -#}
+            <li>{{ include('order_edited_change.txt.twig', { change: change, locale: locale }, with_context = false)|e('html') }}</li>
         {% endfor %}
     </ul>
 
