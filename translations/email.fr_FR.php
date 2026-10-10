@@ -112,4 +112,9 @@ return [
     'Your return request %ref% has been accepted. The items can now be sent back to us, and we will let you know as soon as we receive them.' => 'Votre demande de retour %ref% a été acceptée. Vous pouvez nous renvoyer les articles ; nous vous préviendrons dès leur réception.',
     'Your return request %ref% has been refused.' => 'Votre demande de retour %ref% a été refusée.',
     'Your subscription to %store% newsletter' => 'Votre abonnement à la newletter %store%',
+    'Your order %ref% is waiting for its payment' => 'Votre commande %ref% attend son paiement',
+    'Your order %ref% has been recorded, but we have not received its payment yet. Your basket is kept as it was: you can complete the payment in a few clicks.' => 'Votre commande %ref% est bien enregistrée, mais nous n\'avons pas encore reçu son paiement. Votre panier est conservé tel quel : vous pouvez finaliser le paiement en quelques clics.',
+    'Complete the payment' => 'Finaliser le paiement',
+    'Complete the payment: %url%' => 'Finaliser le paiement : %url%',
+    'If you have already paid, or no longer wish to place this order, you can ignore this message.' => 'Si vous avez déjà payé, ou si vous ne souhaitez plus passer cette commande, vous pouvez ignorer ce message.',
 ];
