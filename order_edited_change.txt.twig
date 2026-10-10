@@ -1,0 +1,16 @@
+{#- One change of an edited order, in a sentence: shared by the HTML and text mails. -#}
+{%- if change.change == 'quantity' -%}
+{{ '%product%: quantity changed from %from% to %to%'|trans({'%product%': change.product_ref, '%from%': change.from, '%to%': change.to}, 'email', locale) }}
+{%- elseif change.change == 'price' -%}
+{{ '%product%: unit price excluding tax changed from %from% to %to%'|trans({'%product%': change.product_ref, '%from%': change.from, '%to%': change.to}, 'email', locale) }}
+{%- elseif change.change == 'added' -%}
+{{ '%product%: %quantity% added'|trans({'%product%': change.product_ref, '%quantity%': change.quantity}, 'email', locale) }}
+{%- elseif change.change == 'removed' -%}
+{{ '%product%: removed'|trans({'%product%': change.product_ref}, 'email', locale) }}
+{%- elseif change.change == 'discount' -%}
+{{ 'Discount changed from %from% to %to%'|trans({'%from%': change.from, '%to%': change.to}, 'email', locale) }}
+{%- elseif change.change == 'postage' -%}
+{{ 'Shipping changed from %from% to %to%'|trans({'%from%': change.from, '%to%': change.to}, 'email', locale) }}
+{%- else -%}
+{{ change.change }}
+{%- endif -%}

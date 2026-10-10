@@ -106,4 +106,13 @@ return [
     'Your return request %ref% has been accepted. The items can now be sent back to us, and we will let you know as soon as we receive them.' => 'Votre demande de retour %ref% a été acceptée. Vous pouvez nous renvoyer les articles ; nous vous préviendrons dès leur réception.',
     'Your return request %ref% has been refused.' => 'Votre demande de retour %ref% a été refusée.',
     'Your subscription to %store% newsletter' => 'Votre abonnement à la newletter %store%',
+    'Your order %ref% has been changed' => 'Votre commande %ref% a été modifiée',
+    'Your order %ref% has been changed:' => 'Votre commande %ref% a été modifiée :',
+    'Your account shows the order as it stands now.' => 'Votre compte présente la commande telle qu\'elle est maintenant.',
+    '%product%: quantity changed from %from% to %to%' => '%product% : quantité passée de %from% à %to%',
+    '%product%: unit price excluding tax changed from %from% to %to%' => '%product% : prix unitaire HT passé de %from% à %to%',
+    '%product%: %quantity% added' => '%product% : %quantity% ajouté(s)',
+    '%product%: removed' => '%product% : retiré',
+    'Discount changed from %from% to %to%' => 'Remise passée de %from% à %to%',
+    'Shipping changed from %from% to %to%' => 'Frais de port passés de %from% à %to%',
 ];

@@ -1,0 +1,48 @@
+{% extends "email-layout.html.twig" %}
+
+{#
+    Sent by an action on editing an order (order status actions, trigger "edit"), once
+    its lines, discount or postage changed.
+
+    Expects:
+      - order_ref:     the reference of the order
+      - order_changes: list of { change: quantity|price|added|removed|discount|postage,
+                       product_ref?, from?, to?, quantity? }
+#}
+
+{# Open in browser #}
+{% block browser %}{% endblock %}
+
+{# No big image header #}
+{% block image_header %}{% endblock %}
+
+{# No pre-header #}
+{% block pre_header %}{% endblock %}
+
+{# Subject #}
+{% block email_subject %}{{ 'Your order %ref% has been changed'|trans({'%ref%': order_ref}, 'email', locale) }}{% endblock %}
+
+{# Title #}
+{% block email_title %}{% endblock %}
+
+{# Content #}
+{% block email_content %}
+    {{ 'Hello,'|trans({}, 'email', locale) }}<br /><br />
+
+    {{ 'Your order %ref% has been changed:'|trans({'%ref%': order_ref}, 'email', locale) }}
+
+    <ul>
+        {% for change in order_changes|default([]) %}
+            {#- The sentence comes from a text template, never escaped: escape it for HTML here. -#}
+            <li>{{ include('order_edited_change.txt.twig', { change: change, locale: locale }, with_context = false)|e('html') }}</li>
+        {% endfor %}
+    </ul>
+
+    <p>{{ 'Your account shows the order as it stands now.'|trans({}, 'email', locale) }}</p>
+
+    <h2>{{ 'Support'|trans({}, 'email', locale) }}</h2>
+    {{ 'For any questions, or concerns, feel free to contact <a href="mailto:%mail%" style="color:#3c69c1;text-decoration:none" target="_blank">%mail%</a>.'|trans({'%mail%': config('store_email')}, 'email', locale)|raw }}<br /><br />
+
+    {{ 'Kind regards'|trans({}, 'email', locale) }},<br />
+    {{ 'The %store% team.'|trans({'%store%': config('store_name')}, 'email', locale) }}
+{% endblock %}
