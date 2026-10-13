@@ -113,5 +113,7 @@ return [
     'Your return request %ref% has been refused.' => 'Your return request %ref% has been refused.',
     'Your subscription to %store% newsletter' => 'Your subscription to %store% newsletter',
     'Requested delivery:' => 'Requested delivery:',
+    'Estimated delivery:' => 'Estimated delivery:',
+    'between %from% and %to%' => 'between %from% and %to%',
     'from %start% to %end%' => 'from %start% to %end%',
 ];
