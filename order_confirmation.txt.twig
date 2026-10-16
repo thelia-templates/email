@@ -15,7 +15,7 @@
 
 {% endif %}
 {% if order.ESTIMATED_DELIVERY_FROM is defined and order.ESTIMATED_DELIVERY_FROM %}
-{{ 'Estimated delivery:'|trans({}, 'email', locale) }} {% if order.ESTIMATED_DELIVERY_TO == order.ESTIMATED_DELIVERY_FROM %}{{ format_date(order.ESTIMATED_DELIVERY_FROM, 'date', null, locale) }}{% else %}{{ 'between %from% and %to%'|trans({'%from%': format_date(order.ESTIMATED_DELIVERY_FROM, 'date', null, locale), '%to%': format_date(order.ESTIMATED_DELIVERY_TO, 'date', null, locale)}, 'email', locale) }}{% endif %}
+{{ 'Estimated delivery:'|trans({}, 'email', locale) }} {% if not order.ESTIMATED_DELIVERY_TO or order.ESTIMATED_DELIVERY_TO == order.ESTIMATED_DELIVERY_FROM %}{{ format_date(order.ESTIMATED_DELIVERY_FROM, 'date', null, locale) }}{% else %}{{ 'between %from% and %to%'|trans({'%from%': format_date(order.ESTIMATED_DELIVERY_FROM, 'date', null, locale), '%to%': format_date(order.ESTIMATED_DELIVERY_TO, 'date', null, locale)}, 'email', locale) }}{% endif %}
 
 {% endif %}
 {{ hook('email-txt.order-confirmation.after-address', {order: order_id}) }}
