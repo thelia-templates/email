@@ -1,0 +1,132 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  merge_group:
+
+# A new push to a pull request makes its previous run pointless: cancel it and
+# give the runners back. Runs on main and in the merge queue are never cancelled.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  php-lint:
+    name: PHP syntax (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: [ '8.3', '8.4' ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '${{ matrix.php }}'
+          coverage: none
+
+      - name: Lint every PHP file of the theme
+        # The only PHP of a mail theme is its translation catalogues, which the
+        # shop loads at runtime.
+        run: git ls-files -z '*.php' | xargs -0 -n1 -P4 php -l
+
+  theme:
+    name: Theme in a Thelia checkout (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    # A leaked DB transaction once kept a core DDL test waiting on a metadata
+    # lock until the runner limit; keep the same guard here.
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        # 8.3 is the supported floor, 8.4 the other version the core is tested on.
+        php: [ '8.3', '8.4' ]
+    env:
+      # Without a token, Flex silently skips the thelia/thelia-recipes endpoint.
+      COMPOSER_AUTH: '{"github-oauth":{"github.com":"${{ github.token }}"}}'
+    steps:
+      - name: Checkout the theme
+        uses: actions/checkout@v4
+        with:
+          path: theme
+
+      - name: Checkout Thelia
+        # A theme is not an application: it has no kernel and no bin/console of
+        # its own. The lint and the rendering tests need a host, and the host is
+        # the core.
+        uses: actions/checkout@v4
+        with:
+          repository: thelia/thelia
+          ref: main
+          path: thelia
+
+      - name: Start MySQL
+        # The runner ships MySQL pre-installed (root/root on 127.0.0.1:3306).
+        run: sudo systemctl start mysql.service
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '${{ matrix.php }}'
+          ini-values: post_max_size=20M
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, mysql, gd, zip
+          coverage: none
+
+      - name: Resolve this theme from the checkout and the others from their branch
+        # A Composer path repository with a forced version, as for the core's own
+        # `core/` directory: without it `composer update` would pull the published
+        # tag and the pull request under test would never be exercised. The other
+        # themes come from their development branch, as in the core workflow.
+        working-directory: thelia
+        run: |
+          composer config repositories.email-checkout '{"type":"path","url":"../theme","options":{"symlink":false,"versions":{"thelia/email-default-template":"1.99.0"}}}'
+          composer require --no-update --no-scripts --no-audit \
+            "thelia/flexy:dev-main as 1.99.0" \
+            "thelia/backoffice-default-twig-template:dev-main as 1.99.0" \
+            "thelia/pdf-default-template:dev-main as 1.99.0"
+
+      - name: Install Composer dependencies
+        working-directory: thelia
+        run: composer update --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Restore the project schema the config package overwrote
+        working-directory: thelia
+        run: git checkout -- local/config/schema.xml
+
+      - name: Check that the theme under test is the one installed
+        # 1.99.0 can only come from the path repository above.
+        working-directory: thelia
+        run: |
+          version=$(composer show thelia/email-default-template --format=json | jq -r '.versions[0]')
+          echo "thelia/email-default-template -> $version"
+          test "$version" = "1.99.0"
+          test -f templates/email/default/order_confirmation.html.twig
+
+      - name: Prepare the test database credentials
+        working-directory: thelia
+        run: printf 'DATABASE_HOST=127.0.0.1\nDATABASE_PORT=3306\nDATABASE_USER=root\nDATABASE_PASSWORD=root\nDATABASE_NAME=test\n' > .env.test.local
+
+      - name: Install the test database
+        # The e-mail template in use is read from the database.
+        working-directory: thelia
+        run: composer test:prepare
+
+      - name: Lint the theme templates
+        working-directory: thelia
+        run: php bin/console lint:twig --env=test --no-debug templates/email/default
+
+      - name: Run the core suites that render the e-mails against this checkout
+        # --fail-on-skipped: several of these tests skip themselves when the
+        # installed template lacks the feature they cover. A skip is not a pass:
+        # the test will run, and may fail, once the theme is merged (it turned
+        # main red once).
+        working-directory: thelia
+        run: >-
+          composer test:integration --
+          --display-deprecations --display-skipped --fail-on-skipped
+          --filter 'MailRenderTest|MailerFactoryTest|OrderConfirmationTemplateTest|OrderShippedTemplateTest|OrderEmailHistoryTest|OrderConfirmationEmailTest|ActiveEmailTemplateConfigTest|TwigParserTextTemplateTest|MessageActionTest|SendShippingEmailListenerTest'
