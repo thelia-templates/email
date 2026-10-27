@@ -16,6 +16,10 @@
     {% for order in loop('order.invoice', 'order', {id: order_id, customer: '*'}) %}
         {% set orderCurrencyIsoCode = '' %}
         {% for cur in loop('currency.order', 'currency', {id: order.CURRENCY}) %}{% set orderCurrencyIsoCode = cur.ISOCODE %}{% endfor %}
+        {# A group that shows its prices without tax: the lines and the subtotal go out without tax,
+           the tax and the total due stay in. `is defined` keeps an older core, whose order loop does
+           not publish the flag, on the taxed display. #}
+        {% set showUntaxed = order.CUSTOMER_GROUP_DISPLAY_TAXED_PRICE is defined and not order.CUSTOMER_GROUP_DISPLAY_TAXED_PRICE %}
         {% for cust in loop('customer.invoice', 'customer', {id: order.CUSTOMER, current: 0}) %}{% set customerRef = cust.REF %}{% endfor %}
 
         {{ hook('email-html.order-confirmation.before-address', {order: order_id}) }}
@@ -60,9 +64,8 @@
         <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;line-height:2em">
             <tr style="color:#999;font-size:11px">
                 <td style="color:#999;border-bottom:1px solid #000">{{ 'What You Purchased'|trans({}, 'email', locale) }}</td>
-                <td align="right" style="color:#999;border-bottom:1px solid #000">{{ 'Price in'|trans({}, 'email', locale) }} {{ orderCurrencyIsoCode }}</td>
+                <td align="right" style="color:#999;border-bottom:1px solid #000">{% if showUntaxed %}{{ 'Price in %currency% excl. tax'|trans({'%currency%': orderCurrencyIsoCode}, 'email', locale) }}{% else %}{{ 'Price in'|trans({}, 'email', locale) }} {{ orderCurrencyIsoCode }}{% endif %}</td>
             </tr>
-            {% set subtotal = 0 %}
             {% for product in loop('order-products', 'order_product', {order: order.ID}) %}
                 <tr>
                     <td style="border-bottom:1px solid #000">
@@ -76,41 +79,69 @@
                         {{ hook('email-html.order-confirmation.product-list', {order: order_id, order_product: product.ID}) }}
                     </td>
                     <td align="right" style="border-bottom:1px solid #000; white-space:nowrap">
-                        {{ product.QUANTITY }} x {{ format_money(product.REAL_TAXED_PRICE, order.CURRENCY) }}
-                        {# The loop already rounds the line the way the order was
-                           totalled, and it picks the promotional amounts on its own.
-                           Multiplying the unit price here instead reintroduced the
-                           rounding the order does not use, and left the subtotal
-                           and the total of the same email disagreeing. #}
-                        {% set subtotal = subtotal + product.REAL_TOTAL_TAXED_PRICE %}
+                        {{ product.QUANTITY }} x {{ format_money(showUntaxed ? product.REAL_PRICE : product.REAL_TAXED_PRICE, order.CURRENCY) }}
                     </td>
                 </tr>
 
                 {{ hook('email-html.order-confirmation.order-product', {order: order_id, order_product: product.ID}) }}
 
             {% endfor %}
-            <tr>
-                <td align="right" style="text-align:right">{{ 'Subtotal'|trans({}, 'email', locale) }}</td>
-                <td align="right" style="text-align:right">{{ format_money(subtotal, order.CURRENCY) }} </td>
-            </tr>
-            {% if order.DISCOUNT > 0 %}
+            {% if showUntaxed %}
+                {# Every amount below is read from the order loop: the recap is not computed here. #}
                 <tr>
-                    <td align="right" style="text-align:right">{{ 'Discount'|trans({}, 'email', locale) }}</td>
-                    <td align="right" style="text-align:right">{{ format_money(order.DISCOUNT, order.CURRENCY) }} </td>
+                    <td align="right" style="text-align:right">{{ 'Subtotal excl. tax'|trans({}, 'email', locale) }}</td>
+                    <td align="right" style="text-align:right">{{ format_money(order.TOTAL_ITEMS_AMOUNT, order.CURRENCY) }} </td>
+                </tr>
+                {% if order.DISCOUNT > 0 %}
+                    <tr>
+                        <td align="right" style="text-align:right">{{ 'Discount excl. tax'|trans({}, 'email', locale) }}</td>
+                        <td align="right" style="text-align:right">{{ format_money(order.DISCOUNT_WITHOUT_TAX, order.CURRENCY) }} </td>
+                    </tr>
+                    <tr>
+                        <td align="right" style="text-align:right">{{ 'Items after discount excl. tax'|trans({}, 'email', locale) }}</td>
+                        <td align="right" style="text-align:right">{{ format_money(order.TOTAL_AMOUNT_AFTER_DISCOUNT, order.CURRENCY) }} </td>
+                    </tr>
+                {% endif %}
+                <tr>
+                    <td align="right" style="text-align:right">{{ 'Shipping excl. tax:'|trans({}, 'email', locale) }}</td>
+                    <td align="right" style="text-align:right">{{ format_money(order.POSTAGE_UNTAXED, order.CURRENCY) }}</td>
                 </tr>
                 <tr>
-                    <td align="right" style="text-align:right">{{ 'Total'|trans({}, 'email', locale) }}</td>
-                    <td align="right" style="text-align:right">{{ format_money(order.TOTAL_TAXED_AMOUNT - order.POSTAGE, order.CURRENCY) }} </td>
+                    <td align="right" style="text-align:right">{{ 'Total excl. tax'|trans({}, 'email', locale) }}</td>
+                    <td align="right" style="text-align:right">{{ format_money(order.TOTAL_AMOUNT, order.CURRENCY) }}</td>
+                </tr>
+                <tr>
+                    <td align="right" style="text-align:right">{{ 'Tax'|trans({}, 'email', locale) }}</td>
+                    <td align="right" style="text-align:right">{{ format_money(order.TOTAL_TAX, order.CURRENCY) }}</td>
+                </tr>
+                <tr>
+                    <td align="right" style="text-align:right"><strong>{{ 'Total incl. tax to pay'|trans({}, 'email', locale) }}</strong></td>
+                    <td align="right" style="text-align:right"><strong>{{ format_money(order.TOTAL_TAXED_AMOUNT, order.CURRENCY) }}</strong></td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td align="right" style="text-align:right">{{ 'Subtotal'|trans({}, 'email', locale) }}</td>
+                    <td align="right" style="text-align:right">{{ format_money(order.TOTAL_TAXED_ITEMS_AMOUNT, order.CURRENCY) }} </td>
+                </tr>
+                {% if order.DISCOUNT > 0 %}
+                    <tr>
+                        <td align="right" style="text-align:right">{{ 'Discount'|trans({}, 'email', locale) }}</td>
+                        <td align="right" style="text-align:right">{{ format_money(order.DISCOUNT, order.CURRENCY) }} </td>
+                    </tr>
+                    <tr>
+                        <td align="right" style="text-align:right">{{ 'Total'|trans({}, 'email', locale) }}</td>
+                        <td align="right" style="text-align:right">{{ format_money(order.TOTAL_TAXED_AMOUNT_AFTER_DISCOUNT, order.CURRENCY) }} </td>
+                    </tr>
+                {% endif %}
+                <tr>
+                    <td align="right" style="text-align:right">{{ 'Shipping:'|trans({}, 'email', locale) }}</td>
+                    <td align="right" style="text-align:right">{{ format_money(order.POSTAGE, order.CURRENCY) }}</td>
+                </tr>
+                <tr>
+                    <td align="right" style="text-align:right"><strong>{{ 'Order Total'|trans({}, 'email', locale) }}</strong></td>
+                    <td align="right" style="text-align:right"><strong>{{ format_money(order.TOTAL_TAXED_AMOUNT, order.CURRENCY) }}</strong></td>
                 </tr>
             {% endif %}
-            <tr>
-                <td align="right" style="text-align:right">{{ 'Shipping:'|trans({}, 'email', locale) }}</td>
-                <td align="right" style="text-align:right">{{ format_money(order.POSTAGE, order.CURRENCY) }}</td>
-            </tr>
-            <tr>
-                <td align="right" style="text-align:right"><strong>{{ 'Order Total'|trans({}, 'email', locale) }}</strong></td>
-                <td align="right" style="text-align:right"><strong>{{ format_money(order.TOTAL_TAXED_AMOUNT, order.CURRENCY) }}</strong></td>
-            </tr>
         </table>
 
         {# Read back to the buyer so they can check what they wrote before the parcel goes
