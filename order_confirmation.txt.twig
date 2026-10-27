@@ -1,4 +1,6 @@
 {% for order in loop('order.invoice', 'order', {id: order_id, customer: '*'}) %}
+{#- A group that shows its prices without tax: unit prices go out without tax, the recap is the one the order loop publishes. `is defined` keeps an older core on the taxed display. -#}
+{%- set showUntaxed = order.CUSTOMER_GROUP_DISPLAY_TAXED_PRICE is defined and not order.CUSTOMER_GROUP_DISPLAY_TAXED_PRICE -%}
 {{- 'Hello,'|trans({}, 'email', locale) }}
 
 {{ 'Here is the details of your order %ref% placed on %date%'|trans({'%ref%': order.REF, '%date%': format_date(order.CREATE_DATE, 'datetime')}, 'email', locale) }}
@@ -25,13 +27,25 @@
 {% endfor -%}
 {{ hook('email-txt.order-confirmation.product-list', {order: order_id, order_product: product.ID}) }}
     {{ 'Quantity : %qty%'|trans({'%qty%': product.QUANTITY}, 'email', locale) }}
-    {{ 'Unit price : %amount%'|trans({'%amount%': format_money(realTaxedPrice, order.CURRENCY)}, 'email', locale) }}
+    {{ showUntaxed ? 'Unit price excl. tax : %amount%'|trans({'%amount%': format_money(product.REAL_PRICE, order.CURRENCY)}, 'email', locale) : 'Unit price : %amount%'|trans({'%amount%': format_money(realTaxedPrice, order.CURRENCY)}, 'email', locale) }}
     {{ hook('email-txt.order-confirmation.order-product', {order: order_id, order_product: product.ID}) }}
 {% endfor -%}
 -----------------------------------------
-{{ 'Items total : %amount%'|trans({'%amount%': format_money(order.TOTAL_TAXED_AMOUNT - order.POSTAGE, order.CURRENCY)}, 'email', locale) }}
+{% if showUntaxed -%}
+{{ 'Items total excl. tax : %amount%'|trans({'%amount%': format_money(order.TOTAL_ITEMS_AMOUNT, order.CURRENCY)}, 'email', locale) }}
+{% if order.DISCOUNT > 0 -%}
+{{ 'Discount excl. tax : %amount%'|trans({'%amount%': format_money(order.DISCOUNT_WITHOUT_TAX, order.CURRENCY)}, 'email', locale) }}
+{{ 'Items after discount excl. tax : %amount%'|trans({'%amount%': format_money(order.TOTAL_AMOUNT_AFTER_DISCOUNT, order.CURRENCY)}, 'email', locale) }}
+{% endif -%}
+{{ 'Shipping excl. tax : %amount%'|trans({'%amount%': format_money(order.POSTAGE_UNTAXED, order.CURRENCY)}, 'email', locale) }}
+{{ 'Total excl. tax : %amount%'|trans({'%amount%': format_money(order.TOTAL_AMOUNT, order.CURRENCY)}, 'email', locale) }}
+{{ 'Tax : %amount%'|trans({'%amount%': format_money(order.TOTAL_TAX, order.CURRENCY)}, 'email', locale) }}
+{{ 'Total incl. tax to pay : %amount%'|trans({'%amount%': format_money(order.TOTAL_TAXED_AMOUNT, order.CURRENCY)}, 'email', locale) }}
+{% else -%}
+{{ 'Items total : %amount%'|trans({'%amount%': format_money(order.TOTAL_TAXED_AMOUNT_AFTER_DISCOUNT, order.CURRENCY)}, 'email', locale) }}
 {{ 'Shipping    : %amount%'|trans({'%amount%': format_money(order.POSTAGE, order.CURRENCY)}, 'email', locale) }}
 {{ 'Total due   : %amount%'|trans({'%amount%': format_money(order.TOTAL_TAXED_AMOUNT, order.CURRENCY)}, 'email', locale) }}
+{% endif -%}
 ==================================
 {% if order.GIFT_MESSAGE|default('') %}
 {{ 'Message for the recipient'|trans({}, 'email', locale) }}
