@@ -14,6 +14,10 @@
 {{ 'Requested delivery:'|trans({}, 'email', locale) }} {{ format_date(order.DELIVERY_DATE, 'date', null, locale) }}{% if order.DELIVERY_SLOT_START %} {{ 'from %start% to %end%'|trans({'%start%': order.DELIVERY_SLOT_START, '%end%': order.DELIVERY_SLOT_END}, 'email', locale) }}{% endif %}
 
 {% endif %}
+{% if order.ESTIMATED_DELIVERY_FROM is defined and order.ESTIMATED_DELIVERY_FROM %}
+{{ 'Estimated delivery:'|trans({}, 'email', locale) }} {% if not order.ESTIMATED_DELIVERY_TO or order.ESTIMATED_DELIVERY_TO == order.ESTIMATED_DELIVERY_FROM %}{{ format_date(order.ESTIMATED_DELIVERY_FROM, 'date', null, locale) }}{% else %}{{ 'between %from% and %to%'|trans({'%from%': format_date(order.ESTIMATED_DELIVERY_FROM, 'date', null, locale), '%to%': format_date(order.ESTIMATED_DELIVERY_TO, 'date', null, locale)}, 'email', locale) }}{% endif %}
+
+{% endif %}
 {{ hook('email-txt.order-notification.after-address', {order: order_id}) }}
 {{ '* Items ordered:'|trans({}, 'email', locale) }}
 {{ hook('email-txt.order-notification.before-products', {order: order_id}) }}
