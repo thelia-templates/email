@@ -25,7 +25,7 @@
 {%- set combinations = loop('combinations', 'order_product_attribute_combination', {order_product: product.ID}) %}
 {% for combination in combinations %}    - {{ combination.ATTRIBUTE_TITLE }} - {{ combination.ATTRIBUTE_AVAILABILITY_TITLE }}
 {% endfor -%}
-    {{ 'Quantity : %qty%'|trans({'%qty%': product.QUANTITY}, 'email', locale) }}
+    {{ 'Quantity : %qty%'|trans({'%qty%': product.QUANTITY|format_quantity(product.QUANTITY_DECIMALS, product.UNIT_CODE, locale)}, 'email', locale) }}
 {% if product.IS_PREORDER|default(0) == 1 %}
     {% if product.RESTOCK_DATE|default('') %}{{ 'Pre-order, restock expected on %date%'|trans({'%date%': format_date(product.RESTOCK_DATE, 'date', null, locale)}, 'email', locale) }}{% else %}{{ 'Pre-order'|trans({}, 'email', locale) }}{% endif %}
 
