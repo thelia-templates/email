@@ -25,7 +25,7 @@
 {%- set combinations = loop('combinations', 'order_product_attribute_combination', {order_product: product.ID}) %}
 {% for combination in combinations %}    - {{ combination.ATTRIBUTE_TITLE }} - {{ combination.ATTRIBUTE_AVAILABILITY_TITLE }}
 {% endfor -%}
-    {{ 'Quantity : %qty%'|trans({'%qty%': product.QUANTITY}, 'email', locale) }}
+    {{ 'Quantity : %qty%'|trans({'%qty%': product.QUANTITY|format_quantity(product.QUANTITY_DECIMALS, product.UNIT_CODE, locale)}, 'email', locale) }}
     {{ showUntaxed ? 'Unit price excl. tax : %amount%'|trans({'%amount%': format_money(product.REAL_PRICE, order.CURRENCY)}, 'email', locale) : 'Unit price : %amount%'|trans({'%amount%': format_money(realTaxedPrice, order.CURRENCY)}, 'email', locale) }}
     {{ hook('email-txt.order-notification.order-product', {order: order_id, order_product: product.ID}) }}
 {% endfor -%}
