@@ -1,0 +1,28 @@
+{{ 'Hello,'|trans({}, 'email', locale) }}
+
+{{ report_title }}
+
+{{ 'Period: from %start% to %end%'|trans({'%start%': period_start, '%end%': period_end}, 'email', locale) }}
+{{ 'Export: %export%'|trans({'%export%': export_title}, 'email', locale) }}
+{% if is_empty %}
+
+{{ 'Nothing to report for this period: no data, so no file is attached.'|trans({}, 'email', locale) }}
+{% else %}
+{% if summary is not empty %}
+
+{% for line in summary -%}
+{{ line.label }} : {{ line.value }}
+{% endfor %}
+{% endif %}
+{% if attachment_name is not empty %}
+{{ 'The complete file is attached: %name%'|trans({'%name%': attachment_name}, 'email', locale) }}
+{% elseif download_url is not empty %}
+{{ 'Download the report'|trans({}, 'email', locale) }} : {{ download_url }}
+{% if download_expires_at is not empty %}
+{{ 'This link expires on %date%. It only works for this file.'|trans({'%date%': download_expires_at}, 'email', locale) }}
+{% endif %}
+{% endif %}
+{% endif %}
+
+{{ 'Kind regards'|trans({}, 'email', locale) }},
+{{ 'The %store% team.'|trans({'%store%': config('store_name')}, 'email', locale) }}
