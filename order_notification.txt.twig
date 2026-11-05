@@ -26,6 +26,10 @@
 {% for combination in combinations %}    - {{ combination.ATTRIBUTE_TITLE }} - {{ combination.ATTRIBUTE_AVAILABILITY_TITLE }}
 {% endfor -%}
     {{ 'Quantity : %qty%'|trans({'%qty%': product.QUANTITY}, 'email', locale) }}
+{% if product.IS_PREORDER|default(0) == 1 %}
+    {% if product.RESTOCK_DATE|default('') %}{{ 'Pre-order, restock expected on %date%'|trans({'%date%': format_date(product.RESTOCK_DATE, 'date', null, locale)}, 'email', locale) }}{% else %}{{ 'Pre-order'|trans({}, 'email', locale) }}{% endif %}
+
+{% endif %}
     {{ showUntaxed ? 'Unit price excl. tax : %amount%'|trans({'%amount%': format_money(product.REAL_PRICE, order.CURRENCY)}, 'email', locale) : 'Unit price : %amount%'|trans({'%amount%': format_money(realTaxedPrice, order.CURRENCY)}, 'email', locale) }}
     {{ hook('email-txt.order-notification.order-product', {order: order_id, order_product: product.ID}) }}
 {% endfor -%}
