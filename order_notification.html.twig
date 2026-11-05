@@ -78,6 +78,9 @@
                             <span style="color:#999;display:block;font-size:11px;line-height:1.2">* {{ combination.ATTRIBUTE_TITLE }}: {{ combination.ATTRIBUTE_AVAILABILITY_TITLE }}</span>
                         {% endfor %}
                         {% endif %}
+                        {% if product.IS_PREORDER|default(0) == 1 %}<br />
+                        <span style="color:#999;display:block;font-size:11px;line-height:1.2">{% if product.RESTOCK_DATE|default('') %}{{ 'Pre-order, restock expected on %date%'|trans({'%date%': format_date(product.RESTOCK_DATE, 'date', null, locale)}, 'email', locale) }}{% else %}{{ 'Pre-order'|trans({}, 'email', locale) }}{% endif %}</span>
+                        {% endif %}
                     </td>
                     <td align="right" style="border-bottom:1px solid #000; white-space:nowrap">
                         {{ product.QUANTITY }} x {{ format_money(showUntaxed ? product.REAL_PRICE : product.REAL_TAXED_PRICE, order.CURRENCY) }}

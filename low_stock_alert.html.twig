@@ -1,0 +1,42 @@
+{% extends "email-layout.html.twig" %}
+
+{# Do not provide a "Open in browser" link #}
+{% block browser %}{% endblock %}
+{# No big image header #}
+{% block image_header %}{% endblock %}
+{# No logo header #}
+{% block logo_header %}{% endblock %}
+{# No pre-header #}
+{% block pre_header %}{% endblock %}
+
+{# Subject #}
+{% block email_subject %}{{ 'Low stock on %store_name%: %product%'|trans({'%store_name%': config('store_name'), '%product%': product_title}, 'email', locale) }}{% endblock %}
+
+{# Title #}
+{% block email_title %}{{ 'Hello, a product is running low on stock.'|trans({}, 'email', locale) }}{% endblock %}
+
+{# Content #}
+{% block email_content %}
+    <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;line-height:2em">
+        <tr>
+            <td style="border-bottom:1px solid #000"><strong>{{ 'Product'|trans({}, 'email', locale) }}</strong></td>
+            <td align="right" style="border-bottom:1px solid #000">{{ product_title }} <i>({{ product_ref }})</i></td>
+        </tr>
+        <tr>
+            <td style="border-bottom:1px solid #000"><strong>{{ 'Combination reference'|trans({}, 'email', locale) }}</strong></td>
+            <td align="right" style="border-bottom:1px solid #000">{{ pse_ref }}</td>
+        </tr>
+        <tr>
+            <td style="border-bottom:1px solid #000"><strong>{{ 'Remaining stock'|trans({}, 'email', locale) }}</strong></td>
+            <td align="right" style="border-bottom:1px solid #000">{{ quantity }}</td>
+        </tr>
+        <tr>
+            <td style="border-bottom:1px solid #000"><strong>{{ 'Alert threshold'|trans({}, 'email', locale) }}</strong></td>
+            <td align="right" style="border-bottom:1px solid #000">{{ threshold }}</td>
+        </tr>
+    </table>
+
+    <br />
+
+    {{ 'Have a nice day.'|trans({}, 'email', locale) }}<br />
+{% endblock %}

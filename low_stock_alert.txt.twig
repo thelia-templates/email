@@ -1,0 +1,10 @@
+{{ 'Hello'|trans({}, 'email', locale) }}
+
+{{ 'A product is running low on stock.'|trans({}, 'email', locale) }}
+
+{{ 'Product : %product%'|trans({'%product%': product_title ~ ' (' ~ product_ref ~ ')'}, 'email', locale) }}
+{{ 'Combination reference : %ref%'|trans({'%ref%': pse_ref}, 'email', locale) }}
+{{ 'Remaining stock : %qty%'|trans({'%qty%': quantity}, 'email', locale) }}
+{{ 'Alert threshold : %qty%'|trans({'%qty%': threshold}, 'email', locale) }}
+
+{{ 'Have a nice day.'|trans({}, 'email', locale) }}
