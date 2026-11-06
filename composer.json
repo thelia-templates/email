@@ -6,7 +6,8 @@
     "require": {
         "php": ">=8.3 <9.0",
         "thelia/core": "^3.4",
-        "thelia/twig-engine-module": "^1.0.9"
+        "thelia/twig-engine-module": "^1.0.9",
+        "thelia/backoffice-default-twig-template": "^1.4"
     },
     "extra": {
         "installer-name": "default"
