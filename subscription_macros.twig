@@ -1,0 +1,13 @@
+{# Shared by the subscription mails. The period an installment pays for, in words. #}
+{% macro period(unit, count, locale) %}
+{%- set number = count|default(1) -%}
+{%- if unit == 'week' -%}
+    {%- if number == 1 -%}{{ 'every week'|trans({}, 'email', locale) }}{%- else -%}{{ 'every %count% weeks'|trans({'%count%': number}, 'email', locale) }}{%- endif -%}
+{%- elseif unit == 'month' -%}
+    {%- if number == 1 -%}{{ 'every month'|trans({}, 'email', locale) }}{%- else -%}{{ 'every %count% months'|trans({'%count%': number}, 'email', locale) }}{%- endif -%}
+{%- elseif unit == 'quarter' -%}
+    {%- if number == 1 -%}{{ 'every quarter'|trans({}, 'email', locale) }}{%- else -%}{{ 'every %count% quarters'|trans({'%count%': number}, 'email', locale) }}{%- endif -%}
+{%- elseif unit == 'year' -%}
+    {%- if number == 1 -%}{{ 'every year'|trans({}, 'email', locale) }}{%- else -%}{{ 'every %count% years'|trans({'%count%': number}, 'email', locale) }}{%- endif -%}
+{%- endif -%}
+{% endmacro %}

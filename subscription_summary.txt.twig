@@ -1,0 +1,21 @@
+{% import 'subscription_macros.twig' as subscription_macros %}
+{# One line per known value, nothing for a value the core did not give. #}
+{% set summary = [] %}
+{% if subscription_ref is defined and subscription_ref is not empty %}
+{% set summary = summary|merge([('Subscription'|trans({}, 'email', locale)) ~ ' : ' ~ subscription_ref]) %}
+{% endif %}
+{% if product_title is defined and product_title is not empty %}
+{% set summary = summary|merge([('Product'|trans({}, 'email', locale)) ~ ' : ' ~ product_title ~ ((quantity is defined and quantity > 1) ? ' x ' ~ quantity : '')]) %}
+{% endif %}
+{% if unit_price is defined and unit_price is not null and unit_price is not same as('') %}
+{% set price = format_number(unit_price, null, null, null, locale) ~ ((currency_code is defined and currency_code is not empty) ? ' ' ~ currency_code : '') %}
+{% set period_text = subscription_macros.period(period_unit|default(''), period_count|default(1), locale)|trim %}
+{% set summary = summary|merge([('Price'|trans({}, 'email', locale)) ~ ' : ' ~ price ~ (period_text is not empty ? ', ' ~ period_text : '')]) %}
+{% endif %}
+{% if payment_method_label is defined and payment_method_label is not empty %}
+{% set summary = summary|merge([('Payment method'|trans({}, 'email', locale)) ~ ' : ' ~ payment_method_label]) %}
+{% endif %}
+{% if order_ref is defined and order_ref is not empty %}
+{% set summary = summary|merge([('Order Number:'|trans({}, 'email', locale)) ~ ' ' ~ order_ref]) %}
+{% endif %}
+{{ summary|join("\n") }}

@@ -1,0 +1,38 @@
+{# Same branches as the HTML template. A paragraph is built in a variable, so that the line
+   breaks of the output are the ones written here and not those of the control tags. #}
+{% if failure_kind is defined and failure_kind == 'action_required' %}
+{% if installment_number is defined and installment_number is not empty %}
+{% set cause = 'Your bank asks you to confirm the payment of installment %number% of your subscription, and we cannot do it for you. The payment has not been taken.'|trans({'%number%': installment_number}, 'email', locale) %}
+{% else %}
+{% set cause = 'Your bank asks you to confirm the payment of your subscription, and we cannot do it for you. The payment has not been taken.'|trans({}, 'email', locale) %}
+{% endif %}
+{% else %}
+{% if installment_number is defined and installment_number is not empty %}
+{% set cause = 'We could not collect installment %number% of your subscription: the payment was declined.'|trans({'%number%': installment_number}, 'email', locale) %}
+{% else %}
+{% set cause = 'We could not collect the payment of your subscription: it was declined.'|trans({}, 'email', locale) %}
+{% endif %}
+{% endif %}
+{% if retry_date is defined and retry_date is not empty %}
+{% set retry = 'We will try again on %date%.'|trans({'%date%': format_date(retry_date, 'date', null, locale)}, 'email', locale) %}
+{% else %}
+{% set retry = 'We will try again shortly.'|trans({}, 'email', locale) %}
+{% endif %}
+{{ 'Hello,'|trans({}, 'email', locale) }}
+
+{{ cause }} {{ retry }}
+
+{{ 'To keep your subscription, please check your payment method, or give us another one, before then. If the payment keeps failing, your subscription will be suspended.'|trans({}, 'email', locale) }}
+
+{{ 'Open my subscriptions'|trans({}, 'email', locale) }} : {{ thelia_url('/account/subscriptions') }}
+
+{% include 'subscription_summary.txt.twig' %}
+
+{% if failure_count is defined and failure_count is not empty %}
+{{ 'Failed attempts so far: %count%'|trans({'%count%': failure_count}, 'email', locale) }}
+
+{% endif %}
+{{ 'For any questions, feel free to contact us at %mail%.'|trans({'%mail%': config('store_email')}, 'email', locale) }}
+
+{{ 'Kind regards'|trans({}, 'email', locale) }},
+{{ 'The %store% team.'|trans({'%store%': config('store_name')}, 'email', locale) }}
