@@ -1,0 +1,44 @@
+{# Same template for the customer and for the shop: see the HTML template. #}
+{% if recipient is defined and recipient == 'shop' %}
+{% if failure_count is defined and failure_count is not empty %}
+{% set what = 'A subscription has been suspended after %count% failed payments.'|trans({'%count%': failure_count}, 'email', locale) %}
+{% else %}
+{% set what = 'A subscription has been suspended after failed payments.'|trans({}, 'email', locale) %}
+{% endif %}
+{% set consequence = 'The customer has been told. Nothing more is taken until the subscription is reactivated.'|trans({}, 'email', locale) %}
+{% if order_ref is defined and order_ref is not empty %}
+{% set consequence = consequence ~ ' ' ~ 'The order of the unpaid installment has been cancelled and its stock released.'|trans({}, 'email', locale) %}
+{% endif %}
+{{ 'Hello,'|trans({}, 'email', locale) }}
+
+{{ what }} {{ consequence }}
+
+{% include 'subscription_summary.txt.twig' %}
+{% if customer_id is defined and customer_id is not empty %}
+{{ 'Customer number: %id%'|trans({'%id%': customer_id}, 'email', locale) }}
+{% endif %}
+{% if subscription_id is defined and subscription_id is not empty %}
+
+{{ 'View this subscription in your shop back-office.'|trans({}, 'email', locale) }} : {{ thelia_url('/admin/subscriptions/' ~ subscription_id) }}
+{% endif %}
+{% else %}
+{% if failure_count is defined and failure_count is not empty %}
+{% set what = 'Your subscription has been suspended because %count% payment attempts failed. No further payment will be taken for now.'|trans({'%count%': failure_count}, 'email', locale) %}
+{% else %}
+{% set what = 'Your subscription has been suspended because the payments failed. No further payment will be taken for now.'|trans({}, 'email', locale) %}
+{% endif %}
+{{ 'Hello,'|trans({}, 'email', locale) }}
+
+{{ what }}
+
+{{ 'To start it again, give us another payment method in your account. The installment that is due will be charged right away.'|trans({}, 'email', locale) }}
+
+{{ 'Open my subscriptions'|trans({}, 'email', locale) }} : {{ thelia_url('/account/subscriptions') }}
+
+{% include 'subscription_summary.txt.twig' %}
+
+{{ 'For any questions, feel free to contact us at %mail%.'|trans({'%mail%': config('store_email')}, 'email', locale) }}
+
+{{ 'Kind regards'|trans({}, 'email', locale) }},
+{{ 'The %store% team.'|trans({'%store%': config('store_name')}, 'email', locale) }}
+{% endif %}

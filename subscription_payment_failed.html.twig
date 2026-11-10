@@ -1,0 +1,61 @@
+{% extends "email-layout.html.twig" %}
+
+{# Open in browser #}
+{% block browser %}{% endblock %}
+
+{# No big image header #}
+{% block image_header %}{% endblock %}
+
+{# No pre-header #}
+{% block pre_header %}{% endblock %}
+
+{# Subject #}
+{% block email_subject %}{{ 'Payment problem on your subscription %ref%'|trans({'%ref%': subscription_ref|default('')}, 'email', locale) }}{% endblock %}
+
+{# Title #}
+{% block email_title %}{% endblock %}
+
+{# Content #}
+{% block email_content %}
+    {{ 'Hello,'|trans({}, 'email', locale) }}<br /><br />
+
+    {# Two causes: the bank refused the charge, or it wants the customer to confirm it.
+       The last branch is the fallback for a kind added later. #}
+    {% if failure_kind is defined and failure_kind == 'action_required' %}
+        {% if installment_number is defined and installment_number is not empty %}
+            {{ 'Your bank asks you to confirm the payment of installment %number% of your subscription, and we cannot do it for you. The payment has not been taken.'|trans({'%number%': installment_number}, 'email', locale) }}
+        {% else %}
+            {{ 'Your bank asks you to confirm the payment of your subscription, and we cannot do it for you. The payment has not been taken.'|trans({}, 'email', locale) }}
+        {% endif %}
+    {% else %}
+        {% if installment_number is defined and installment_number is not empty %}
+            {{ 'We could not collect installment %number% of your subscription: the payment was declined.'|trans({'%number%': installment_number}, 'email', locale) }}
+        {% else %}
+            {{ 'We could not collect the payment of your subscription: it was declined.'|trans({}, 'email', locale) }}
+        {% endif %}
+    {% endif %}
+    {% if retry_date is defined and retry_date is not empty %}
+        {{ 'We will try again on %date%.'|trans({'%date%': format_date(retry_date, 'date', null, locale)}, 'email', locale) }}
+    {% else %}
+        {{ 'We will try again shortly.'|trans({}, 'email', locale) }}
+    {% endif %}
+    <br /><br />
+
+    {{ 'To keep your subscription, please check your payment method, or give us another one, before then. If the payment keeps failing, your subscription will be suspended.'|trans({}, 'email', locale) }}<br /><br />
+
+    <p><a href="{{ thelia_url('/account/subscriptions') }}" style="color:#3c69c1;text-decoration:none" target="_blank">{{ 'Open my subscriptions'|trans({}, 'email', locale) }}</a></p>
+
+    {% include 'subscription_summary.html.twig' %}
+
+    {% if failure_count is defined and failure_count is not empty %}
+        <p>{{ 'Failed attempts so far: %count%'|trans({'%count%': failure_count}, 'email', locale) }}</p>
+    {% endif %}
+
+    <br />
+
+    <h2>{{ 'Support'|trans({}, 'email', locale) }}</h2>
+    {{ 'For any questions, or concerns, feel free to contact <a href="mailto:%mail%" style="color:#3c69c1;text-decoration:none" target="_blank">%mail%</a>.'|trans({'%mail%': config('store_email')}, 'email', locale)|raw }}<br /><br />
+
+    {{ 'Kind regards'|trans({}, 'email', locale) }},<br />
+    {{ 'The %store% team.'|trans({'%store%': config('store_name')}, 'email', locale) }}
+{% endblock %}
