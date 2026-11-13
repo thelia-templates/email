@@ -1,0 +1,25 @@
+{# Who cancelled it: the last branch also covers the system, which does not send this mail today. #}
+{% if actor_type is defined and actor_type == 'customer' %}
+{% set who = 'As you asked, your subscription has been cancelled.'|trans({}, 'email', locale) %}
+{% elseif actor_type is defined and actor_type == 'admin' %}
+{% set who = 'Your subscription has been cancelled by %store%.'|trans({'%store%': config('store_name')}, 'email', locale) %}
+{% else %}
+{% set who = 'Your subscription has been cancelled.'|trans({}, 'email', locale) %}
+{% endif %}
+{% if cancel_at_date is defined and cancel_at_date is not empty %}
+{% set until = 'It stays active until %date%, and no payment will be taken after that.'|trans({'%date%': format_date(cancel_at_date, 'date', null, locale)}, 'email', locale) %}
+{% else %}
+{% set until = 'No further payment will be taken.'|trans({}, 'email', locale) %}
+{% endif %}
+{{ 'Hello,'|trans({}, 'email', locale) }}
+
+{{ who }} {{ until }}
+
+{% include 'subscription_summary.txt.twig' %}
+
+{{ 'Open my subscriptions'|trans({}, 'email', locale) }} : {{ thelia_url('/account/subscriptions') }}
+
+{{ 'For any questions, feel free to contact us at %mail%.'|trans({'%mail%': config('store_email')}, 'email', locale) }}
+
+{{ 'Kind regards'|trans({}, 'email', locale) }},
+{{ 'The %store% team.'|trans({'%store%': config('store_name')}, 'email', locale) }}

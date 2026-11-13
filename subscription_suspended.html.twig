@@ -1,0 +1,68 @@
+{% extends "email-layout.html.twig" %}
+
+{# Open in browser #}
+{% block browser %}{% endblock %}
+
+{# No big image header #}
+{% block image_header %}{% endblock %}
+
+{# No pre-header #}
+{% block pre_header %}{% endblock %}
+
+{# Subject #}
+{% block email_subject %}{% if recipient is defined and recipient == 'shop' %}{{ 'Subscription %ref% suspended'|trans({'%ref%': subscription_ref|default('')}, 'email', locale) }}{% else %}{{ 'Your subscription %ref% has been suspended'|trans({'%ref%': subscription_ref|default('')}, 'email', locale) }}{% endif %}{% endblock %}
+
+{# Title #}
+{% block email_title %}{% endblock %}
+
+{# Content #}
+{% block email_content %}
+    {# The same template is sent twice: to the customer, and to the notification addresses of the shop. #}
+    {% if recipient is defined and recipient == 'shop' %}
+        {{ 'Hello,'|trans({}, 'email', locale) }}<br /><br />
+
+        {% if failure_count is defined and failure_count is not empty %}
+            {{ 'A subscription has been suspended after %count% failed payments.'|trans({'%count%': failure_count}, 'email', locale) }}
+        {% else %}
+            {{ 'A subscription has been suspended after failed payments.'|trans({}, 'email', locale) }}
+        {% endif %}
+        {{ 'The customer has been told. Nothing more is taken until the subscription is reactivated.'|trans({}, 'email', locale) }}
+        {% if order_ref is defined and order_ref is not empty %}
+            {{ 'The order of the unpaid installment has been cancelled and its stock released.'|trans({}, 'email', locale) }}
+        {% endif %}
+        <br /><br />
+
+        {% include 'subscription_summary.html.twig' %}
+
+        {% if customer_id is defined and customer_id is not empty %}
+            <p>{{ 'Customer number: %id%'|trans({'%id%': customer_id}, 'email', locale) }}</p>
+        {% endif %}
+
+        {% if subscription_id is defined and subscription_id is not empty %}
+            <p><a href="{{ thelia_url('/admin/subscriptions/' ~ subscription_id) }}" style="color:#3c69c1;text-decoration:none" target="_blank">{{ 'View this subscription in your shop back-office.'|trans({}, 'email', locale) }}</a></p>
+        {% endif %}
+    {% else %}
+        {{ 'Hello,'|trans({}, 'email', locale) }}<br /><br />
+
+        {% if failure_count is defined and failure_count is not empty %}
+            {{ 'Your subscription has been suspended because %count% payment attempts failed. No further payment will be taken for now.'|trans({'%count%': failure_count}, 'email', locale) }}
+        {% else %}
+            {{ 'Your subscription has been suspended because the payments failed. No further payment will be taken for now.'|trans({}, 'email', locale) }}
+        {% endif %}
+        <br /><br />
+
+        {{ 'To start it again, give us another payment method in your account. The installment that is due will be charged right away.'|trans({}, 'email', locale) }}<br /><br />
+
+        <p><a href="{{ thelia_url('/account/subscriptions') }}" style="color:#3c69c1;text-decoration:none" target="_blank">{{ 'Open my subscriptions'|trans({}, 'email', locale) }}</a></p>
+
+        {% include 'subscription_summary.html.twig' %}
+
+        <br />
+
+        <h2>{{ 'Support'|trans({}, 'email', locale) }}</h2>
+        {{ 'For any questions, or concerns, feel free to contact <a href="mailto:%mail%" style="color:#3c69c1;text-decoration:none" target="_blank">%mail%</a>.'|trans({'%mail%': config('store_email')}, 'email', locale)|raw }}<br /><br />
+
+        {{ 'Kind regards'|trans({}, 'email', locale) }},<br />
+        {{ 'The %store% team.'|trans({'%store%': config('store_name')}, 'email', locale) }}
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,34 @@
+{% import 'subscription_macros.twig' as subscription_macros %}
+{# Every value is optional: a line is printed only when the core gave it. #}
+<table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;line-height:2em">
+    {% if subscription_ref is defined and subscription_ref is not empty %}
+    <tr>
+        <td style="border-bottom:1px solid #000"><strong>{{ 'Subscription'|trans({}, 'email', locale) }}</strong></td>
+        <td align="right" style="border-bottom:1px solid #000">{{ subscription_ref }}</td>
+    </tr>
+    {% endif %}
+    {% if product_title is defined and product_title is not empty %}
+    <tr>
+        <td style="border-bottom:1px solid #000"><strong>{{ 'Product'|trans({}, 'email', locale) }}</strong></td>
+        <td align="right" style="border-bottom:1px solid #000">{{ product_title }}{% if quantity is defined and quantity > 1 %} × {{ quantity }}{% endif %}</td>
+    </tr>
+    {% endif %}
+    {% if unit_price is defined and unit_price is not null and unit_price is not same as('') %}
+    <tr>
+        <td style="border-bottom:1px solid #000"><strong>{{ 'Price'|trans({}, 'email', locale) }}</strong></td>
+        <td align="right" style="border-bottom:1px solid #000">{{ format_number(unit_price, null, null, null, locale) }}{% if currency_code is defined and currency_code is not empty %} {{ currency_code }}{% endif %}{% set period_text = subscription_macros.period(period_unit|default(''), period_count|default(1), locale) %}{% if period_text|trim is not empty %}, {{ period_text }}{% endif %}</td>
+    </tr>
+    {% endif %}
+    {% if payment_method_label is defined and payment_method_label is not empty %}
+    <tr>
+        <td style="border-bottom:1px solid #000"><strong>{{ 'Payment method'|trans({}, 'email', locale) }}</strong></td>
+        <td align="right" style="border-bottom:1px solid #000">{{ payment_method_label }}</td>
+    </tr>
+    {% endif %}
+    {% if order_ref is defined and order_ref is not empty %}
+    <tr>
+        <td style="border-bottom:1px solid #000"><strong>{{ 'Order Number:'|trans({}, 'email', locale) }}</strong></td>
+        <td align="right" style="border-bottom:1px solid #000">{{ order_ref }}</td>
+    </tr>
+    {% endif %}
+</table>

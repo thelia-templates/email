@@ -1,0 +1,48 @@
+{% extends "email-layout.html.twig" %}
+
+{# Open in browser #}
+{% block browser %}{% endblock %}
+
+{# No big image header #}
+{% block image_header %}{% endblock %}
+
+{# No pre-header #}
+{% block pre_header %}{% endblock %}
+
+{# Subject #}
+{% block email_subject %}{{ 'Your subscription %ref% has been cancelled'|trans({'%ref%': subscription_ref|default('')}, 'email', locale) }}{% endblock %}
+
+{# Title #}
+{% block email_title %}{% endblock %}
+
+{# Content #}
+{% block email_content %}
+    {{ 'Hello,'|trans({}, 'email', locale) }}<br /><br />
+
+    {# Who cancelled it. The last branch also covers the system, which does not send this mail today. #}
+    {% if actor_type is defined and actor_type == 'customer' %}
+        {{ 'As you asked, your subscription has been cancelled.'|trans({}, 'email', locale) }}
+    {% elseif actor_type is defined and actor_type == 'admin' %}
+        {{ 'Your subscription has been cancelled by %store%.'|trans({'%store%': config('store_name')}, 'email', locale) }}
+    {% else %}
+        {{ 'Your subscription has been cancelled.'|trans({}, 'email', locale) }}
+    {% endif %}
+    {% if cancel_at_date is defined and cancel_at_date is not empty %}
+        {{ 'It stays active until %date%, and no payment will be taken after that.'|trans({'%date%': format_date(cancel_at_date, 'date', null, locale)}, 'email', locale) }}
+    {% else %}
+        {{ 'No further payment will be taken.'|trans({}, 'email', locale) }}
+    {% endif %}
+    <br /><br />
+
+    {% include 'subscription_summary.html.twig' %}
+
+    <p><a href="{{ thelia_url('/account/subscriptions') }}" style="color:#3c69c1;text-decoration:none" target="_blank">{{ 'Open my subscriptions'|trans({}, 'email', locale) }}</a></p>
+
+    <br />
+
+    <h2>{{ 'Support'|trans({}, 'email', locale) }}</h2>
+    {{ 'For any questions, or concerns, feel free to contact <a href="mailto:%mail%" style="color:#3c69c1;text-decoration:none" target="_blank">%mail%</a>.'|trans({'%mail%': config('store_email')}, 'email', locale)|raw }}<br /><br />
+
+    {{ 'Kind regards'|trans({}, 'email', locale) }},<br />
+    {{ 'The %store% team.'|trans({'%store%': config('store_name')}, 'email', locale) }}
+{% endblock %}
