@@ -1,0 +1,29 @@
+{% extends "email-layout.html.twig" %}
+
+{# Open in browser #}
+{% block browser %}{% endblock %}
+
+{# No big image header #}
+{% block image_header %}{% endblock %}
+
+{# No pre-header #}
+{% block pre_header %}{% endblock %}
+
+{# Subject #}
+{% block email_subject %}{{ 'Join %company% on %store%'|trans({'%company%': company_name|default(''), '%store%': config('store_name')}, 'email', locale) }}{% endblock %}
+
+{# Title #}
+{% block email_title %}{% endblock %}
+
+{# Content #}
+{% block email_content %}
+    {% set invitation_url = thelia_url('/account/company/invitation/%token', {token: token|default('')}) %}
+    {{ 'Hello,'|trans({}, 'email', locale) }}<br /><br />
+    {{ '%issuer% invites you to join %company% on %store%.'|trans({'%issuer%': issuer_name|default(''), '%company%': company_name|default(''), '%store%': config('store_name')}, 'email', locale) }}<br /><br />
+    {{ 'Click the link below, or copy it in your browser address bar, to accept the invitation.'|trans({}, 'email', locale) }}<br /><br />
+    <a href="{{ invitation_url }}">{{ invitation_url }}</a><br /><br />
+    {{ 'The invitation is for this address only, and stops working %days% days after this email was sent.'|trans({'%days%': lifetime_in_days|default(7)}, 'email', locale) }}<br /><br />
+    {{ 'If you were not expecting it, you can ignore this email.'|trans({}, 'email', locale) }}<br /><br />
+    {{ 'Kind regards'|trans({}, 'email', locale) }},<br />
+    {{ 'The %store% team.'|trans({'%store%': config('store_name')}, 'email', locale) }}
+{% endblock %}

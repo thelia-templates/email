@@ -92,4 +92,9 @@ return [
     'Your password for %store' => 'Your password for %store',
     'Your password is <span style="font-family: courier, fixed; font-size: 120%">%pass</span>' => 'Your password is <span style="font-family: courier, fixed; font-size: 120%">%pass</span>',
     'Your subscription to %store newsletter' => 'Your subscription to %store newsletter',
+    'Join %company% on %store%' => 'Join %company% on %store%',
+    '%issuer% invites you to join %company% on %store%.' => '%issuer% invites you to join %company% on %store%.',
+    'Click the link below, or copy it in your browser address bar, to accept the invitation.' => 'Click the link below, or copy it in your browser address bar, to accept the invitation.',
+    'The invitation is for this address only, and stops working %days% days after this email was sent.' => 'The invitation is for this address only, and stops working %days% days after this email was sent.',
+    'If you were not expecting it, you can ignore this email.' => 'If you were not expecting it, you can ignore this email.',
 ];

@@ -75,4 +75,9 @@ return [
     'Your order confirmation Nº %ref' => 'Ihre Bestellungsbestätigung Nr. %ref',
     'Your password for %store' => 'Ihr Passwort für %store',
     'Your password is <span style="font-family: courier, fixed; font-size: 120%">%pass</span>' => 'Ihr Passwort ist <span style="font-family: courier, fixed; font-size: 120%">%pass</span> ',
+    'Join %company% on %store%' => 'Treten Sie %company% auf %store% bei',
+    '%issuer% invites you to join %company% on %store%.' => '%issuer% lädt Sie ein, %company% auf %store% beizutreten.',
+    'Click the link below, or copy it in your browser address bar, to accept the invitation.' => 'Klicken Sie auf den folgenden Link oder kopieren Sie ihn in die Adressleiste Ihres Browsers, um die Einladung anzunehmen.',
+    'The invitation is for this address only, and stops working %days% days after this email was sent.' => 'Die Einladung gilt nur für diese Adresse und verfällt %days% Tage nach dem Versand dieser E-Mail.',
+    'If you were not expecting it, you can ignore this email.' => 'Wenn Sie diese E-Mail nicht erwartet haben, können Sie sie ignorieren.',
 ];

@@ -97,4 +97,9 @@ return [
     'Your password for %store' => 'Votre mot de passe pour %store',
     'Your password is <span style="font-family: courier, fixed; font-size: 120%">%pass</span>' => 'Votre mot de passe est <span style="font-family: courier, fixed; font-size: 120%">%pass</span>',
     'Your subscription to %store newsletter' => 'Votre abonnement à la newletter %store',
+    'Join %company% on %store%' => 'Rejoignez %company% sur %store%',
+    '%issuer% invites you to join %company% on %store%.' => '%issuer% vous invite à rejoindre %company% sur %store%.',
+    'Click the link below, or copy it in your browser address bar, to accept the invitation.' => 'Cliquez sur le lien ci-dessous, ou copiez-le dans la barre d\'adresse de votre navigateur, pour accepter l\'invitation.',
+    'The invitation is for this address only, and stops working %days% days after this email was sent.' => 'L\'invitation est réservée à cette adresse et cesse de fonctionner %days% jours après l\'envoi de cet e-mail.',
+    'If you were not expecting it, you can ignore this email.' => 'Si vous ne l\'attendiez pas, vous pouvez ignorer cet e-mail.',
 ];
