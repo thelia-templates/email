@@ -85,6 +85,8 @@ return [
     'A product is running low on stock.' => 'A product is running low on stock.',
     'Product : %product%' => 'Product : %product%',
     'Combination reference : %ref%' => 'Combination reference : %ref%',
+    'Sale unit' => 'Sale unit',
+    'Sale unit : %unit%' => 'Sale unit : %unit%',
     'Remaining stock : %qty%' => 'Remaining stock : %qty%',
     'Alert threshold : %qty%' => 'Alert threshold : %qty%',
 ];
