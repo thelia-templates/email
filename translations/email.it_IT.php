@@ -54,6 +54,8 @@ return [
     'A product is running low on stock.' => 'Un prodotto sta per esaurire le scorte.',
     'Product : %product%' => 'Prodotto : %product%',
     'Combination reference : %ref%' => 'Riferimento della combinazione : %ref%',
+    'Sale unit' => 'Unità di vendita',
+    'Sale unit : %unit%' => 'Unità di vendita : %unit%',
     'Remaining stock : %qty%' => 'Scorte rimanenti : %qty%',
     'Alert threshold : %qty%' => 'Soglia di allarme : %qty%',
 ];

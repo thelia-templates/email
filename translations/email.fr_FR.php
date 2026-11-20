@@ -148,6 +148,8 @@ return [
     'A product is running low on stock.' => 'Un produit arrive à court de stock.',
     'Product : %product%' => 'Produit : %product%',
     'Combination reference : %ref%' => 'Référence de la déclinaison : %ref%',
+    'Sale unit' => 'Unité de vente',
+    'Sale unit : %unit%' => 'Unité de vente : %unit%',
     'Remaining stock : %qty%' => 'Stock restant : %qty%',
     'Alert threshold : %qty%' => 'Seuil d\'alerte : %qty%',
 ];

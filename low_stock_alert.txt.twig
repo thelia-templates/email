@@ -4,6 +4,9 @@
 
 {{ 'Product : %product%'|trans({'%product%': product_title ~ ' (' ~ product_ref ~ ')'}, 'email', locale) }}
 {{ 'Combination reference : %ref%'|trans({'%ref%': pse_ref}, 'email', locale) }}
+{% if sale_unit_title is defined %}
+{{ 'Sale unit : %unit%'|trans({'%unit%': sale_unit_title ?: sale_unit_code}, 'email', locale) }}
+{% endif %}
 {{ 'Remaining stock : %qty%'|trans({'%qty%': quantity}, 'email', locale) }}
 {{ 'Alert threshold : %qty%'|trans({'%qty%': threshold}, 'email', locale) }}
 

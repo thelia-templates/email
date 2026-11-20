@@ -26,6 +26,13 @@
             <td style="border-bottom:1px solid #000"><strong>{{ 'Combination reference'|trans({}, 'email', locale) }}</strong></td>
             <td align="right" style="border-bottom:1px solid #000">{{ pse_ref }}</td>
         </tr>
+        {% if sale_unit_title is defined %}
+            {# The own stock of a sale unit ran low, not the national stock of the combination. #}
+            <tr>
+                <td style="border-bottom:1px solid #000"><strong>{{ 'Sale unit'|trans({}, 'email', locale) }}</strong></td>
+                <td align="right" style="border-bottom:1px solid #000">{{ sale_unit_title ?: sale_unit_code }}</td>
+            </tr>
+        {% endif %}
         <tr>
             <td style="border-bottom:1px solid #000"><strong>{{ 'Remaining stock'|trans({}, 'email', locale) }}</strong></td>
             <td align="right" style="border-bottom:1px solid #000">{{ quantity }}</td>
