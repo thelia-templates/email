@@ -1,0 +1,30 @@
+{% extends "email-layout.html.twig" %}
+
+{# Open in browser #}
+{% block browser %}{% endblock %}
+
+{# No big image header #}
+{% block image_header %}{% endblock %}
+
+{# No pre-header #}
+{% block pre_header %}{% endblock %}
+
+{# Subject #}
+{% block email_subject %}{{ 'Your quote %ref%'|trans({'%ref%': quote_ref}, 'email', locale) }}{% endblock %}
+
+{# Title #}
+{% block email_title %}{% endblock %}
+
+{# Content #}
+{% block email_content %}
+    {{ 'Hello,'|trans({}, 'email', locale) }}<br /><br />
+    {% if is_reminder %}{{ 'A reminder: quote %ref%, revision %revision%, is still waiting for your answer.'|trans({'%ref%': quote_ref, '%revision%': revision_number}, 'email', locale) }}{% else %}{{ 'Quote %ref%, revision %revision%, is ready for you.'|trans({'%ref%': quote_ref, '%revision%': revision_number}, 'email', locale) }}{% endif %}<br /><br />
+    {% if merchant_note %}{{ 'A message from the shop:'|trans({}, 'email', locale) }}<br />{{ merchant_note|nl2br }}<br /><br />{% endif %}
+    {% include 'quote_summary.html.twig' %}
+    {% if valid_until %}{{ 'The quote is valid until %date%.'|trans({'%date%': valid_until}, 'email', locale) }}<br /><br />{% endif %}
+    {% set quote_url = thelia_url(quote_path ?? '/account') %}
+    {{ 'Read the quote and answer it on your account:'|trans({}, 'email', locale) }}<br />
+    <a href="{{ quote_url }}">{{ quote_url }}</a><br /><br />
+    {{ 'Kind regards'|trans({}, 'email', locale) }},<br />
+    {{ 'The %store% team.'|trans({'%store%': config('store_name')}, 'email', locale) }}
+{% endblock %}

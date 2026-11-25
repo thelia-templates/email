@@ -1,0 +1,42 @@
+{% extends "email-layout.html.twig" %}
+
+{# Open in browser #}
+{% block browser %}{% endblock %}
+
+{# No big image header #}
+{% block image_header %}{% endblock %}
+
+{# No pre-header #}
+{% block pre_header %}{% endblock %}
+
+{# Subject #}
+{% block email_subject %}{{ 'Counter-proposal on quote %ref%'|trans({'%ref%': quote_ref}, 'email', locale) }}{% endblock %}
+
+{# Title #}
+{% block email_title %}{% endblock %}
+
+{# Content #}
+{% block email_content %}
+    {{ '%customer% answers quote %ref% (revision %revision%) with a counter-proposal.'|trans({'%customer%': customer_name, '%ref%': quote_ref, '%revision%': revision_number}, 'email', locale) }}<br /><br />
+    <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+            <th style="text-align: left;">{{ 'Product'|trans({}, 'email', locale) }}</th>
+            <th style="text-align: right;">{{ 'Offered'|trans({}, 'email', locale) }}</th>
+            <th style="text-align: right;">{{ 'Requested'|trans({}, 'email', locale) }}</th>
+        </tr>
+        {% for change in requested_changes %}
+        <tr>
+            <td>{{ change.title }} ({{ change.ref }})</td>
+            <td style="text-align: right;">{{ change.quantity }} x {{ change.price }}</td>
+            <td style="text-align: right;">{{ change.requested_quantity ?? change.quantity }} x {{ change.requested_price ?? change.price }}</td>
+        </tr>
+        {% endfor %}
+    </table><br />
+    {% if admin_quote_path %}
+        {% set admin_quote_url = thelia_url(admin_quote_path) %}
+        {{ 'Open the quote in the back office:'|trans({}, 'email', locale) }}<br />
+        <a href="{{ admin_quote_url }}">{{ admin_quote_url }}</a><br /><br />
+    {% endif %}
+    {{ 'Kind regards'|trans({}, 'email', locale) }},<br />
+    {{ 'The %store% team.'|trans({'%store%': config('store_name')}, 'email', locale) }}
+{% endblock %}

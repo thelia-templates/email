@@ -1,0 +1,8 @@
+{% for line in lines %}
+- {{ line.title }} ({{ line.ref }}) : {{ line.quantity }} x {{ line.price }} ({{ 'Catalogue price'|trans({}, 'email', locale) }} : {{ line.catalog_price }}) = {{ line.total }}
+{% endfor %}
+
+{{ 'Total of the lines without tax'|trans({}, 'email', locale) }} : {{ items_untaxed }}
+{% if has_postage %}{{ 'Postage without tax'|trans({}, 'email', locale) }} : {{ postage_untaxed }}
+{% endif %}{% if has_discount %}{{ 'Discount with tax'|trans({}, 'email', locale) }} : {{ discount }}
+{% endif %}{{ 'Total with tax'|trans({}, 'email', locale) }} : {{ total_taxed }}
