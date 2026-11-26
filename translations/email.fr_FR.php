@@ -120,6 +120,8 @@ return [
     'Your return request %ref% has been refused.' => 'Votre demande de retour %ref% a été refusée.',
     'Your subscription to %store% newsletter' => 'Votre abonnement à la newletter %store%',
     'Requested delivery:' => 'Livraison souhaitée : ',
+    'Estimated delivery:' => 'Livraison estimée : ',
+    'between %from% and %to%' => 'entre le %from% et le %to%',
     'from %start% to %end%' => 'de %start% à %end%',
     'Price in %currency% excl. tax' => 'Prix en %currency% HT',
     'Subtotal excl. tax' => 'Total articles HT',
