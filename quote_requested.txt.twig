@@ -1,0 +1,17 @@
+{{ 'New quote request %ref% from %customer%.'|trans({'%ref%': quote_ref, '%customer%': customer_name}, 'email', locale) }}
+
+{% if company_name %}{{ 'Company: '|trans({}, 'email', locale) }}{{ company_name }}
+{% endif %}{{ 'Email: '|trans({}, 'email', locale) }}{{ customer_email }}
+{% if needed_by %}{{ 'Needed by %date%.'|trans({'%date%': needed_by}, 'email', locale) }}
+{% endif %}{% if coupon_dropped %}{{ 'The promo code of the cart was dropped.'|trans({}, 'email', locale) }}
+{% endif %}
+{% if buyer_comment %}{{ 'Comment of the buyer:'|trans({}, 'email', locale) }}
+{{ buyer_comment }}
+
+{% endif %}{% include 'quote_summary.txt.twig' %}
+
+{% if admin_quote_path %}{{ 'Open the quote in the back office:'|trans({}, 'email', locale) }}
+{{ thelia_url(admin_quote_path) }}
+
+{% endif %}{{ 'Kind regards'|trans({}, 'email', locale) }},
+{{ 'The %store% team.'|trans({'%store%': config('store_name')}, 'email', locale) }}

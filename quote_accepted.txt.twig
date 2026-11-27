@@ -1,0 +1,11 @@
+{{ '%customer% accepted quote %ref% (revision %revision%).'|trans({'%customer%': customer_name, '%ref%': quote_ref, '%revision%': revision_number}, 'email', locale) }}
+
+{{ 'The quote becomes an order when the payment is made.'|trans({}, 'email', locale) }}
+
+{% include 'quote_summary.txt.twig' %}
+
+{% if admin_quote_path %}{{ 'Open the quote in the back office:'|trans({}, 'email', locale) }}
+{{ thelia_url(admin_quote_path) }}
+
+{% endif %}{{ 'Kind regards'|trans({}, 'email', locale) }},
+{{ 'The %store% team.'|trans({'%store%': config('store_name')}, 'email', locale) }}

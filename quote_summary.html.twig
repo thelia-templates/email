@@ -1,0 +1,24 @@
+{# The lines and the totals of a revision of a quote, as the shop sent it. #}
+<table style="width: 100%; border-collapse: collapse;">
+    <tr>
+        <th style="text-align: left;">{{ 'Product'|trans({}, 'email', locale) }}</th>
+        <th style="text-align: center;">{{ 'Quantity'|trans({}, 'email', locale) }}</th>
+        <th style="text-align: right;">{{ 'Catalogue price'|trans({}, 'email', locale) }}</th>
+        <th style="text-align: right;">{{ 'Negotiated price'|trans({}, 'email', locale) }}</th>
+        <th style="text-align: right;">{{ 'Total without tax'|trans({}, 'email', locale) }}</th>
+    </tr>
+    {% for line in lines %}
+    <tr>
+        <td>{{ line.title }} ({{ line.ref }})</td>
+        <td style="text-align: center;">{{ line.quantity }}</td>
+        <td style="text-align: right;">{{ line.catalog_price }}</td>
+        <td style="text-align: right;">{{ line.price }}</td>
+        <td style="text-align: right;">{{ line.total }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<br />
+{{ 'Total of the lines without tax'|trans({}, 'email', locale) }} : {{ items_untaxed }}<br />
+{% if has_postage %}{{ 'Postage without tax'|trans({}, 'email', locale) }} : {{ postage_untaxed }}<br />{% endif %}
+{% if has_discount %}{{ 'Discount with tax'|trans({}, 'email', locale) }} : {{ discount }}<br />{% endif %}
+<strong>{{ 'Total with tax'|trans({}, 'email', locale) }} : {{ total_taxed }}</strong><br /><br />

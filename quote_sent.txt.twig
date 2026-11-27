@@ -1,0 +1,15 @@
+{{ 'Hello,'|trans({}, 'email', locale) }}
+
+{% if is_reminder %}{{ 'A reminder: quote %ref%, revision %revision%, is still waiting for your answer.'|trans({'%ref%': quote_ref, '%revision%': revision_number}, 'email', locale) }}{% else %}{{ 'Quote %ref%, revision %revision%, is ready for you.'|trans({'%ref%': quote_ref, '%revision%': revision_number}, 'email', locale) }}{% endif %}
+
+{% if merchant_note %}{{ 'A message from the shop:'|trans({}, 'email', locale) }}
+{{ merchant_note }}
+
+{% endif %}{% include 'quote_summary.txt.twig' %}
+{% if valid_until %}{{ 'The quote is valid until %date%.'|trans({'%date%': valid_until}, 'email', locale) }}
+
+{% endif %}{{ 'Read the quote and answer it on your account:'|trans({}, 'email', locale) }}
+{{ thelia_url(quote_path ?? '/account') }}
+
+{{ 'Kind regards'|trans({}, 'email', locale) }},
+{{ 'The %store% team.'|trans({'%store%': config('store_name')}, 'email', locale) }}

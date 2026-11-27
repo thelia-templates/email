@@ -1,0 +1,35 @@
+{% extends "email-layout.html.twig" %}
+
+{# Open in browser #}
+{% block browser %}{% endblock %}
+
+{# No big image header #}
+{% block image_header %}{% endblock %}
+
+{# No pre-header #}
+{% block pre_header %}{% endblock %}
+
+{# Subject #}
+{% block email_subject %}{{ 'New quote request %ref%'|trans({'%ref%': quote_ref}, 'email', locale) }}{% endblock %}
+
+{# Title #}
+{% block email_title %}{% endblock %}
+
+{# Content #}
+{% block email_content %}
+    {{ 'New quote request %ref% from %customer%.'|trans({'%ref%': quote_ref, '%customer%': customer_name}, 'email', locale) }}<br /><br />
+    {% if company_name %}{{ 'Company: '|trans({}, 'email', locale) }}{{ company_name }}<br />{% endif %}
+    {{ 'Email: '|trans({}, 'email', locale) }}{{ customer_email }}<br />
+    {% if needed_by %}{{ 'Needed by %date%.'|trans({'%date%': needed_by}, 'email', locale) }}<br />{% endif %}
+    {% if coupon_dropped %}{{ 'The promo code of the cart was dropped.'|trans({}, 'email', locale) }}<br />{% endif %}
+    <br />
+    {% if buyer_comment %}{{ 'Comment of the buyer:'|trans({}, 'email', locale) }}<br />{{ buyer_comment|nl2br }}<br /><br />{% endif %}
+    {% include 'quote_summary.html.twig' %}
+    {% if admin_quote_path %}
+        {% set admin_quote_url = thelia_url(admin_quote_path) %}
+        {{ 'Open the quote in the back office:'|trans({}, 'email', locale) }}<br />
+        <a href="{{ admin_quote_url }}">{{ admin_quote_url }}</a><br /><br />
+    {% endif %}
+    {{ 'Kind regards'|trans({}, 'email', locale) }},<br />
+    {{ 'The %store% team.'|trans({'%store%': config('store_name')}, 'email', locale) }}
+{% endblock %}
